@@ -1,7 +1,7 @@
 """Deviation Agent - 方案偏离识别与预警"""
 import random
 from datetime import datetime
-from core.database import get_db, execute_insert
+from backend.core.database import get_db, execute_insert
 
 
 def generate_deviation_id():

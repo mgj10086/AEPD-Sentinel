@@ -10,8 +10,8 @@ backend_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if backend_dir not in sys.path:
     sys.path.insert(0, backend_dir)
 
-from core.database import get_db, execute_query, execute_insert
-from services.rag_engine import init_chroma, add_documents, search_documents
+from backend.core.database import get_db, execute_query, execute_insert
+from backend.services.rag_engine import init_chroma, add_documents, search_documents
 
 def generate_item_id():
     return f"KNW-{uuid.uuid4().hex[:12]}"

@@ -28,6 +28,7 @@ backend/data/*.sqlite
 
 # ChromaDB
 data/chroma/
+backend/data/chroma/
 
 # Environment
 .env
@@ -58,3 +59,5 @@ htmlcov/
 data/downloads/*.zip
 data/downloads/*.asc
 data/downloads/*.txt
+data/downloads/fears/
+data/downloads/Deleted/

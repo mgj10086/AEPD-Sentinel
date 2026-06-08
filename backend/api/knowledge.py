@@ -8,8 +8,8 @@ backend_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if backend_dir not in sys.path:
     sys.path.insert(0, backend_dir)
 
-from core.database import get_db, execute_query, execute_insert
-from services.knowledge_service import process_uploaded_file
+from backend.core.database import get_db, execute_query, execute_insert
+from backend.services.knowledge_service import process_uploaded_file
 
 router = APIRouter(prefix="/api/admin/knowledge", tags=["知识库管理"])
 

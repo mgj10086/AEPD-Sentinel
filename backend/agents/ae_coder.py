@@ -4,8 +4,8 @@ import time
 import random
 from datetime import datetime
 from typing import List, Dict, Any
-from core.database import get_db, execute_query, execute_insert
-from core.config import EXPECTED_AES, TRIAL_DRUG
+from backend.core.database import get_db, execute_query, execute_insert
+from backend.core.config import EXPECTED_AES, TRIAL_DRUG
 
 MEDDRA_SYNONYMS = {
     "头痛": {"llt": "头痛", "llt_code": "10019211", "pt": "头痛", "pt_code": "10019211", "soc": "神经系统疾病", "soc_code": "10029205"},

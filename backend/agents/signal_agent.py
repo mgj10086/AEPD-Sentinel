@@ -2,7 +2,7 @@
 import json
 import random
 from datetime import datetime
-from core.database import get_db, execute_query, execute_insert
+from backend.core.database import get_db, execute_query, execute_insert
 
 
 def generate_signal_id():
