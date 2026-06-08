@@ -1,0 +1,63 @@
+# AE Sentinel - Docker Compose
+# 药物临床试验不良事件智能监测平台
+# 启动: docker-compose up -d
+# 停止: docker-compose down
+
+version: "3.8"
+
+services:
+  # ========== 核心应用 ==========
+  ae-sentinel:
+    build: .
+    container_name: ae-sentinel-app
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+      - ./backend:/app/backend
+      - ./frontend:/app/frontend
+      - ./lib:/app/lib
+    environment:
+      - ZHIPU_API_KEY=${ZHIPU_API_KEY:-}
+      - QWEN_API_KEY=${QWEN_API_KEY:-}
+    depends_on:
+      - chromadb
+    restart: unless-stopped
+    networks:
+      - ae-network
+
+  # ========== 向量数据库 ==========
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: ae-sentinel-chroma
+    ports:
+      - "8001:8000"
+    volumes:
+      - ./data/chroma:/chroma/chroma
+    environment:
+      - IS_PERSISTENT=TRUE
+      - ANONYMIZED_TELEMETRY=FALSE
+    restart: unless-stopped
+    networks:
+      - ae-network
+
+  # ========== 本地LLM (可选) ==========
+  # 如需使用本地大模型，取消以下注释
+  # ollama:
+  #   image: ollama/ollama:latest
+  #   container_name: ae-sentinel-ollama
+  #   ports:
+  #     - "11434:11434"
+  #   volumes:
+  #     - ./data/ollama:/root/.ollama
+  #   deploy:
+  #     resources:
+  #       reservations:
+  #         memory: 8G
+  #   restart: unless-stopped
+  #   networks:
+  #     - ae-network
+
+networks:
+  ae-network:
+    driver: bridge

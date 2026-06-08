@@ -53,3 +53,8 @@ htmlcov/
 # Exports
 *.docx
 *.pdf
+
+# Downloads (large data files)
+data/downloads/*.zip
+data/downloads/*.asc
+data/downloads/*.txt

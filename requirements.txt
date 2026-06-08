@@ -1,0 +1,32 @@
+# AE Sentinel - Python Dependency List
+# 药物临床试验不良事件智能监测平台
+
+# Web Framework
+fastapi>=0.111.0
+uvicorn[standard]>=0.22.0
+
+# Database
+# SQLite is built-in, no extra package needed
+# pymysql is bundled in lib/ for MySQL support (optional)
+
+# Vector Database
+chromadb>=0.4.0
+
+# Authentication
+PyJWT>=2.8.0
+
+# Document Export
+python-docx>=0.8.11
+
+# HTTP File Upload
+python-multipart>=0.0.5
+
+# Data Processing
+# requests>=2.28.0  # (optional, for external API calls)
+
+# LLM & Embedding (optional, for production deployment)
+# langchain>=0.1.0
+# transformers>=4.30.0
+# torch>=2.0.0
+# sentence-transformers>=2.2.0
+# biopython>=1.81  # PubMed E-utilities
