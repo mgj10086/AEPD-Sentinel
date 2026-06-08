@@ -2,18 +2,15 @@
 import sys
 import os
 
+# Add project root to sys.path so 'backend.xxx' imports work
+project_root = os.path.dirname(os.path.abspath(__file__))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+
 # Add local lib to path (jwt, multipart, etc.)
-lib_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "lib")
+lib_dir = os.path.join(project_root, "lib")
 if os.path.exists(lib_dir) and lib_dir not in sys.path:
     sys.path.insert(0, lib_dir)
-
-# Add backend to path
-backend_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "backend")
-if backend_dir not in sys.path:
-    sys.path.insert(0, backend_dir)
-
-# Change to backend directory for relative imports
-os.chdir(backend_dir)
 
 import uvicorn
 from backend.core.config import HOST, PORT, DEBUG

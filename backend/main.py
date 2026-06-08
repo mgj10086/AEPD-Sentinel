@@ -12,8 +12,8 @@ backend_dir = os.path.dirname(os.path.abspath(__file__))
 if backend_dir not in sys.path:
     sys.path.insert(0, backend_dir)
 
-from backend.core.config import PORT, HOST
-from backend.core.database import init_db
+from core.config import PORT, HOST
+from core.database import init_db
 
 # Import all routers
 from api.auth import router as auth_router

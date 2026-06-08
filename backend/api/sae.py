@@ -9,9 +9,9 @@ backend_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if backend_dir not in sys.path:
     sys.path.insert(0, backend_dir)
 
-from backend.core.database import get_db, execute_query, execute_insert
-from backend.agents.sae_report import generate_sae_report
-from backend.services.export_service import export_to_docx, export_to_json, export_to_pdf
+from core.database import get_db, execute_query, execute_insert
+from agents.sae_report import generate_sae_report
+from services.export_service import export_to_docx, export_to_json, export_to_pdf
 
 router = APIRouter(prefix="/api/saereport", tags=["SAE报告"])
 

@@ -7,7 +7,7 @@ backend_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if backend_dir not in sys.path:
     sys.path.insert(0, backend_dir)
 
-from backend.core.database import get_connection
+from core.database import get_connection
 
 START_TIME = time.time()
 

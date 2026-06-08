@@ -1,7 +1,7 @@
 """Compliance Agent - 合规与质控"""
 import json
 from datetime import datetime, timedelta
-from backend.core.database import get_db, execute_query
+from core.database import get_db, execute_query
 
 
 def check_sae_timeliness() -> list:

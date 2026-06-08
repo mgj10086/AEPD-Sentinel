@@ -2,8 +2,8 @@
 import json
 import random
 from datetime import datetime, timedelta
-from backend.core.database import get_db, execute_query, execute_insert
-from backend.core.config import TRIAL_DRUG
+from core.database import get_db, execute_query, execute_insert
+from core.config import TRIAL_DRUG
 
 
 def generate_report_id():

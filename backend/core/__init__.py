@@ -1,2 +1,2 @@
-# AE Sentinel backend package
-# Core package - config and database
+# AE Sentinel core package
+__all__ = ["config", "database"]

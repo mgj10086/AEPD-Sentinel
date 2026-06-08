@@ -1,2 +1,2 @@
 # AE Sentinel API package
-# REST API routers
+__all__ = ["auth", "ae", "sae", "deviations", "signals", "compliance", "knowledge", "audit", "health"]

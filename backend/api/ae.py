@@ -9,8 +9,8 @@ backend_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if backend_dir not in sys.path:
     sys.path.insert(0, backend_dir)
 
-from backend.core.database import get_db, execute_query, execute_insert
-from backend.agents.ae_coder import process_ae
+from core.database import get_db, execute_query, execute_insert
+from agents.ae_coder import process_ae
 
 router = APIRouter(prefix="/api/ae", tags=["AE编码"])
 
