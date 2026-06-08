@@ -25,7 +25,7 @@ assert r['code'] == 200
 # 2. Health
 print('\n[2] 健康检查')
 r = api('/api/health')
-print(f'  LLM={r["services"]["llm"]}, VectorDB={r["services"]["vector_db"]}, MySQL={r["services"]["mysql"]}')
+print(f'  LLM={r["data"]["llm_status"]}, VectorDB={r["data"]["vector_db_status"]}, DB={r["data"]["mysql_status"]}')
 
 # 3. Batch import 10 cases
 print('\n[3] 批量导入10个模拟病例')
