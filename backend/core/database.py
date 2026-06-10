@@ -22,8 +22,23 @@ print(f"数据库引擎: {_engine}")
 
 
 def _to_sqlite_sql(sql: str) -> str:
-    """Convert MySQL %s placeholders to SQLite ? placeholders."""
-    return re.sub(r'%s', '?', sql)
+    """Convert MySQL SQL to SQLite-compatible SQL."""
+    # Placeholders
+    sql = re.sub(r'%s', '?', sql)
+    # Strip MySQL engine/charset
+    sql = re.sub(r'\s+ENGINE\s*=\s*\S+', '', sql, flags=re.IGNORECASE)
+    sql = re.sub(r'\s+DEFAULT\s+CHARSET\s*=\s*\S+', '', sql, flags=re.IGNORECASE)
+    # TINYINT -> INTEGER
+    sql = re.sub(r'\bTINYINT\b', 'INTEGER', sql, flags=re.IGNORECASE)
+    # DOUBLE -> REAL
+    sql = re.sub(r'\bDOUBLE\b', 'REAL', sql, flags=re.IGNORECASE)
+    # VARCHAR(N) -> TEXT
+    sql = re.sub(r'\bVARCHAR\s*\(\s*\d+\s*\)', 'TEXT', sql, flags=re.IGNORECASE)
+    # DATETIME DEFAULT NOW() -> TEXT DEFAULT (datetime('now','localtime'))
+    sql = re.sub(r"\bDATETIME\s+DEFAULT\s+NOW\s*\(\s*\)", "TEXT DEFAULT (datetime('now','localtime'))", sql, flags=re.IGNORECASE)
+    # ON UPDATE NOW() -> (dropped, SQLite doesn't support it)
+    sql = re.sub(r"\s+ON\s+UPDATE\s+NOW\s*\(\s*\)", "", sql, flags=re.IGNORECASE)
+    return sql
 
 
 # ── MySQL ─────────────────────────────────────────
