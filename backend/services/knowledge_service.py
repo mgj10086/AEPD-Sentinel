@@ -4,77 +4,61 @@ import os
 import uuid
 import re
 from datetime import datetime
-import sys
 
-backend_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if backend_dir not in sys.path:
-    sys.path.insert(0, backend_dir)
-
-from core.database import get_db, execute_query, execute_insert
-from services.rag_engine import init_chroma, add_documents, search_documents
+from backend.core.database import get_db, execute_query, execute_insert
+from backend.services.rag_engine import init_chroma, add_documents, search_documents
 
 def generate_item_id():
     return f"KNW-{uuid.uuid4().hex[:12]}"
 
 def process_uploaded_file(file_content: bytes, file_name: str, doc_type: str, description: str = "") -> dict:
     item_id = generate_item_id()
-    text_content = extract_text(file_content, file_name)
-    chunks = split_text(text_content)
-    if chunks:
-        metadatas = [{"type": doc_type, "file": file_name, "chunk": i} for i in range(len(chunks))]
-        ids = [f"{item_id}_{i}" for i in range(len(chunks))]
-        add_documents(chunks, metadatas, ids)
+    item = {
+        "item_id": item_id, "title": file_name, "type": doc_type,
+        "description": description, "status": "processing", "created_at": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+    }
+    ext = os.path.splitext(file_name)[1].lower()
+    content = ""
     try:
-        with get_db() as conn:
-            execute_insert(conn, """
-                INSERT INTO knowledge_items (item_id, type, file_name, description, status, progress, message)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            """, (item_id, doc_type, file_name, description, "completed", 1.0,
-                  f"成功处理 {len(chunks)} 个文本块"))
-    except Exception as e:
-        print(f"DB save knowledge error: {e}")
-    return {"task_id": item_id, "status": "completed", "file_name": file_name}
-
-def extract_text(file_content: bytes, file_name: str) -> str:
-    ext = file_name.lower().split('.')[-1]
-    if ext in ('txt', 'md'):
-        return file_content.decode('utf-8', errors='ignore')
-    elif ext == 'docx':
-        try:
-            from docx import Document
-            from io import BytesIO
-            doc = Document(BytesIO(file_content))
-            return '\n'.join([p.text for p in doc.paragraphs])
-        except:
-            return ""
-    elif ext == 'xlsx':
-        try:
-            import openpyxl
-            from io import BytesIO
-            wb = openpyxl.load_workbook(BytesIO(file_content))
-            texts = []
-            for ws in wb.worksheets:
-                for row in ws.iter_rows(values_only=True):
-                    texts.append(' '.join(str(c) for c in row if c))
-            return '\n'.join(texts)
-        except:
-            return ""
-    else:
-        return file_content.decode('utf-8', errors='ignore')
-
-def split_text(text: str, chunk_size: int = 500, overlap: int = 50) -> list:
-    if not text:
-        return []
-    paragraphs = re.split(r'\n\s*\n', text)
-    chunks = []
-    current_chunk = ""
-    for para in paragraphs:
-        if len(current_chunk) + len(para) > chunk_size:
-            if current_chunk:
-                chunks.append(current_chunk.strip())
-            current_chunk = para
+        if ext == ".md":
+            content = file_content.decode("utf-8")
+        elif ext == ".csv":
+            content = file_content.decode("utf-8")
+            lines = content.split("\n")
+            content = "\n".join(lines[:100])
+        elif ext == ".txt":
+            content = file_content.decode("utf-8")
         else:
-            current_chunk += ("\n" + para if current_chunk else para)
-    if current_chunk:
-        chunks.append(current_chunk.strip())
-    return chunks[:100]
+            content = f"[{file_name}] 已上传"
+    except: content = f"[{file_name}] 解析失败"
+    
+    with get_db() as conn:
+        execute_insert(conn, "INSERT INTO knowledge_items (item_id, type, file_name, description, status, progress, message, created_at, updated_at) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)",
+            (item_id, doc_type, file_name, description, "processing", 0.5, "已上传，待向量化", item["created_at"], ""))
+    
+    # Add to ChromaDB
+    try:
+        add_documents([content], [{"item_id": item_id, "type": doc_type}], [item_id])
+        with get_db() as conn:
+            execute_insert(conn, "UPDATE knowledge_items SET status = 'completed', progress = %s, message = %s WHERE item_id = %s",
+                (1.0, "已完成向量化", item_id))
+        item["status"] = "completed"
+    except Exception as e:
+        item["status"] = "failed"
+        with get_db() as conn:
+            execute_insert(conn, "UPDATE knowledge_items SET status = %s, message = %s WHERE item_id = %s",
+                ("failed", f"向量化失败: {str(e)}", item_id))
+    
+    item["message"] = "向量化成功" if item["status"] == "completed" else "向量化失败"
+    item["progress"] = 1.0 if item["status"] == "completed" else 0.5
+    return item
+
+def get_knowledge_list(doc_type: str = "", page: int = 1, page_size: int = 20) -> dict:
+    offset = (page - 1) * page_size
+    conditions, params = [], []
+    if doc_type: conditions.append("type = %s"); params.append(doc_type)
+    where = " AND ".join(conditions) if conditions else "1=1"
+    with get_db() as conn:
+        total = execute_query(conn, f"SELECT COUNT(*) as cnt FROM knowledge_items WHERE {where}", params)[0]["cnt"]
+        items = execute_query(conn, f"SELECT * FROM knowledge_items WHERE {where} ORDER BY created_at DESC LIMIT {page_size} OFFSET {offset}", params)
+    return {"total": total, "page": page, "page_size": page_size, "items": items}

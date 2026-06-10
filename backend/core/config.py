@@ -6,8 +6,22 @@ HOST = "0.0.0.0"
 PORT = 8000
 DEBUG = False
 
-# SQLite
+# Database selection: "mysql" or "sqlite"
+# If MySQL is not available, use "sqlite" for development
+DATABASE_ENGINE = os.getenv("DATABASE_ENGINE", "mysql")
+
+# MySQL configuration
+MYSQL_HOST = os.getenv("MYSQL_HOST", "localhost")
+MYSQL_PORT = int(os.getenv("MYSQL_PORT", 3306))
+MYSQL_USER = os.getenv("MYSQL_USER", "root")
+MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD", "123456")
+MYSQL_DATABASE = os.getenv("MYSQL_DATABASE", "ae_sentinel")
+
+# SQLite configuration (fallback)
 DB_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data", "ae_sentinel.db")
+
+# Ensure data directory exists
+os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
 
 # ChromaDB
 CHROMA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data", "chroma")

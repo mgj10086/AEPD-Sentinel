@@ -1,21 +1,17 @@
 """AE Router - 不良事件编码接口"""
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Request
 from typing import Optional
 from datetime import datetime
 import json
-import sys, os
 
-backend_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if backend_dir not in sys.path:
-    sys.path.insert(0, backend_dir)
-
-from core.database import get_db, execute_query, execute_insert
-from agents.ae_coder import process_ae
+from backend.core.database import get_db, execute_query, execute_insert
+from backend.agents.ae_coder import process_ae
+from backend.services.audit_service import extract_username_from_token, write_audit_log
 
 router = APIRouter(prefix="/api/ae", tags=["AE编码"])
 
 @router.post("/process")
-def process_single_ae(req: dict):
+def process_single_ae(req: dict, request: Request):
     ae_text = req.get("ae_text", "").strip()
     if not ae_text:
         raise HTTPException(status_code=400, detail={"code": 10001, "message": "AE文本为空"})
@@ -23,11 +19,15 @@ def process_single_ae(req: dict):
         if key not in req:
             req[key] = None
     result = process_ae(type('obj', (object,), req)())
+    # 写入审计日志
+    user_id = extract_username_from_token(request.headers.get("Authorization", ""))
+    write_audit_log(user_id, "ae_coder", "encode", result["ae_id"],
+                    f"AE编码: {ae_text[:50]} | 严重性: {result['severity']} | SAE: {result['sae_flag']}")
     return {"code": 200, "message": "success", "data": result,
             "timestamp": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")}
 
 @router.post("/batch")
-def process_batch_ae(req: dict):
+def process_batch_ae(req: dict, request: Request):
     ae_list = req.get("ae_list", [])
     results = []
     success_count = 0
@@ -43,6 +43,10 @@ def process_batch_ae(req: dict):
         except Exception as e:
             fail_count += 1
             results.append({"error": str(e)})
+    # 写入审计日志
+    user_id = extract_username_from_token(request.headers.get("Authorization", ""))
+    write_audit_log(user_id, "ae_coder", "batch_encode", "",
+                    f"批量AE编码: 成功{success_count}/失败{fail_count}/共{len(ae_list)}条")
     return {"code": 200, "message": "success",
             "data": {"results": results, "success_count": success_count, "fail_count": fail_count, "total_count": len(ae_list)},
             "timestamp": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")}
@@ -54,13 +58,13 @@ def get_ae_results(page: int = Query(1, ge=1), page_size: int = Query(20, ge=1, 
     conditions = []
     params = []
     if patient_id:
-        conditions.append("patient_id = ?"); params.append(patient_id)
+        conditions.append("patient_id = %s"); params.append(patient_id)
     if sae_flag is not None:
-        conditions.append("sae_flag = ?"); params.append(1 if sae_flag else 0)
+        conditions.append("sae_flag = %s"); params.append(1 if sae_flag else 0)
     if date_from:
-        conditions.append("visit_date >= ?"); params.append(date_from)
+        conditions.append("visit_date >= %s"); params.append(date_from)
     if date_to:
-        conditions.append("visit_date <= ?"); params.append(date_to)
+        conditions.append("visit_date <= %s"); params.append(date_to)
     where_clause = " AND ".join(conditions) if conditions else "1=1"
     with get_db() as conn:
         total_result = execute_query(conn, f"SELECT COUNT(*) as cnt FROM ae_results WHERE {where_clause}", params)
@@ -81,7 +85,7 @@ def get_ae_results(page: int = Query(1, ge=1), page_size: int = Query(20, ge=1, 
 @router.get("/results/{ae_id}")
 def get_ae_detail(ae_id: str):
     with get_db() as conn:
-        results = execute_query(conn, "SELECT * FROM ae_results WHERE ae_id = ?", (ae_id,))
+        results = execute_query(conn, "SELECT * FROM ae_results WHERE ae_id = %s", (ae_id,))
     if not results:
         raise HTTPException(status_code=404, detail="AE记录不存在")
     item = results[0]

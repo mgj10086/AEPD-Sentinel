@@ -1,14 +1,10 @@
 """Deviations Router - 方案偏离接口"""
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Request
 from typing import Optional
 from datetime import datetime
-import sys, os
 
-backend_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if backend_dir not in sys.path:
-    sys.path.insert(0, backend_dir)
-
-from core.database import get_db, execute_query, execute_insert
+from backend.core.database import get_db, execute_query, execute_insert
+from backend.services.audit_service import extract_username_from_token, write_audit_log
 
 router = APIRouter(prefix="/api/deviations", tags=["方案偏离"])
 
@@ -22,7 +18,7 @@ def get_rules():
 @router.get("/poll")
 def poll_deviations(last_check_time: str = Query(...)):
     with get_db() as conn:
-        items = execute_query(conn, "SELECT * FROM deviations WHERE created_at > ? AND status = 'pending' ORDER BY created_at DESC", (last_check_time,))
+        items = execute_query(conn, "SELECT * FROM deviations WHERE created_at > %s AND status = 'pending' ORDER BY created_at DESC", (last_check_time,))
     return {"code": 200, "message": "success",
             "data": {"new_deviations": items, "latest_time": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")},
             "timestamp": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")}
@@ -31,9 +27,9 @@ def poll_deviations(last_check_time: str = Query(...)):
 def get_deviations_list(page: int = Query(1, ge=1), page_size: int = Query(20, ge=1, le=100),
     severity: Optional[str] = Query(None), status: Optional[str] = Query(None), patient_id: Optional[str] = Query(None)):
     conditions, params = [], []
-    if severity: conditions.append("severity = ?"); params.append(severity)
-    if status: conditions.append("status = ?"); params.append(status)
-    if patient_id: conditions.append("patient_id = ?"); params.append(patient_id)
+    if severity: conditions.append("severity = %s"); params.append(severity)
+    if status: conditions.append("status = %s"); params.append(status)
+    if patient_id: conditions.append("patient_id = %s"); params.append(patient_id)
     where = " AND ".join(conditions) if conditions else "1=1"
     offset = (page - 1) * page_size
     with get_db() as conn:
@@ -46,16 +42,20 @@ def get_deviations_list(page: int = Query(1, ge=1), page_size: int = Query(20, g
 @router.get("/{deviation_id}")
 def get_deviation_detail(deviation_id: str):
     with get_db() as conn:
-        results = execute_query(conn, "SELECT * FROM deviations WHERE deviation_id = ?", (deviation_id,))
+        results = execute_query(conn, "SELECT * FROM deviations WHERE deviation_id = %s", (deviation_id,))
     if not results:
         raise HTTPException(status_code=404, detail="偏离记录不存在")
     return {"code": 200, "message": "success", "data": results[0],
             "timestamp": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")}
 
 @router.put("/{deviation_id}/resolve")
-def resolve_deviation(deviation_id: str, req: dict):
+def resolve_deviation(deviation_id: str, req: dict, request: Request):
     with get_db() as conn:
-        execute_insert(conn, "UPDATE deviations SET status = 'resolved', resolution = ?, resolved_by = ?, action_taken = ? WHERE deviation_id = ?",
+        execute_insert(conn, "UPDATE deviations SET status = 'resolved', resolution = %s, resolved_by = %s, action_taken = %s WHERE deviation_id = %s",
             (req.get("resolution"), req.get("resolved_by"), req.get("action_taken"), deviation_id))
+    # 写入审计日志
+    user_id = extract_username_from_token(request.headers.get("Authorization", ""))
+    write_audit_log(user_id, "deviation", "resolve", deviation_id,
+                    f"解决偏离: 处理人={req.get('resolved_by', '')} 措施={req.get('action_taken', '')}")
     return {"code": 200, "message": "resolved", "data": {"deviation_id": deviation_id},
             "timestamp": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")}

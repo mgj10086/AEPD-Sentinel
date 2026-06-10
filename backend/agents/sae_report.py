@@ -2,8 +2,8 @@
 import json
 import random
 from datetime import datetime, timedelta
-from core.database import get_db, execute_query, execute_insert
-from core.config import TRIAL_DRUG
+from backend.core.database import get_db, execute_query, execute_insert
+from backend.core.config import TRIAL_DRUG
 
 
 def generate_report_id():
@@ -59,7 +59,7 @@ def generate_cioms_fields(ae_record: dict) -> dict:
 
 def generate_sae_report(ae_id: str, reporter_name: str, reporter_org: str) -> dict:
     with get_db() as conn:
-        results = execute_query(conn, "SELECT * FROM ae_results WHERE ae_id = ?", (ae_id,))
+        results = execute_query(conn, "SELECT * FROM ae_results WHERE ae_id = %s", (ae_id,))
         if not results:
             raise ValueError(f"AE record {ae_id} not found")
         ae_record = results[0]
@@ -79,7 +79,7 @@ def generate_sae_report(ae_id: str, reporter_name: str, reporter_org: str) -> di
             execute_insert(conn, """
                 INSERT INTO sae_reports (report_id, ae_id, cioms_fields, causality_assessment,
                     similar_drug_safety, report_status, deadline)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
             """, (
                 report_id, ae_id, json.dumps(cioms, ensure_ascii=False),
                 causality, similar_drug_info, "draft", deadline

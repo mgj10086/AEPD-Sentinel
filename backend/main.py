@@ -5,26 +5,20 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 import os
 import time
-import sys
 
-# Ensure core, agents, services, api in path
-backend_dir = os.path.dirname(os.path.abspath(__file__))
-if backend_dir not in sys.path:
-    sys.path.insert(0, backend_dir)
-
-from core.config import PORT, HOST
-from core.database import init_db
+from backend.core.config import PORT, HOST
+from backend.core.database import init_db
 
 # Import all routers
-from api.auth import router as auth_router
-from api.ae import router as ae_router
-from api.sae import router as sae_router
-from api.deviations import router as deviation_router
-from api.signals import router as signal_router
-from api.compliance import router as compliance_router
-from api.knowledge import router as knowledge_router
-from api.audit import router as audit_router
-from api.health import router as health_router
+from backend.api.auth import router as auth_router
+from backend.api.ae import router as ae_router
+from backend.api.sae import router as sae_router
+from backend.api.deviations import router as deviation_router
+from backend.api.signals import router as signal_router
+from backend.api.compliance import router as compliance_router
+from backend.api.knowledge import router as knowledge_router
+from backend.api.audit import router as audit_router
+from backend.api.health import router as health_router
 
 START_TIME = time.time()
 

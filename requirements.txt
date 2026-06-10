@@ -6,8 +6,7 @@ fastapi>=0.111.0
 uvicorn[standard]>=0.22.0
 
 # Database
-# SQLite is built-in, no extra package needed
-# pymysql is bundled in lib/ for MySQL support (optional)
+# MySQL via pymysql (bundled in lib/)
 
 # Vector Database
 chromadb>=0.4.0

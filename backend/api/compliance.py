@@ -1,14 +1,9 @@
 """Compliance Router - 合规质控接口"""
 from fastapi import APIRouter, Query
 from datetime import datetime
-import sys, os
 
-backend_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if backend_dir not in sys.path:
-    sys.path.insert(0, backend_dir)
-
-from core.database import get_db, execute_query
-from agents.compliance import get_compliance_report, check_sae_timeliness
+from backend.core.database import get_db, execute_query
+from backend.agents.compliance import get_compliance_report, check_sae_timeliness
 
 router = APIRouter(prefix="/api/compliance", tags=["合规质控"])
 

@@ -4,8 +4,9 @@ import time
 import random
 from datetime import datetime
 from typing import List, Dict, Any
-from core.database import get_db, execute_query, execute_insert
-from core.config import EXPECTED_AES, TRIAL_DRUG
+from backend.core.database import get_db, execute_query, execute_insert
+from backend.core.config import EXPECTED_AES, TRIAL_DRUG
+from backend.agents.deviation import process_patient_visit
 
 MEDDRA_SYNONYMS = {
     "头痛": {"llt": "头痛", "llt_code": "10019211", "pt": "头痛", "pt_code": "10019211", "soc": "神经系统疾病", "soc_code": "10029205"},
@@ -145,7 +146,7 @@ def process_ae(req) -> Dict[str, Any]:
                 INSERT INTO ae_results (ae_id, patient_id, visit_id, visit_date, ae_text, drug_name,
                     onset_date, end_date, reporter, meddra_codes, severity, sae_flag, sae_criteria,
                     expected_flag, causality_tentative, citations, processing_time_ms)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """, (
                 ae_id, req.patient_id, getattr(req, 'visit_id', None), req.visit_date,
                 req.ae_text, req.drug_name, getattr(req, 'onset_date', None),
@@ -156,6 +157,19 @@ def process_ae(req) -> Dict[str, Any]:
             ))
     except Exception as e:
         print(f"DB save error: {e}")
+
+    # Auto-detect deviations for this patient visit
+    try:
+        visit_date = getattr(req, 'visit_date', None)
+        drug_name = getattr(req, 'drug_name', '')
+        patient_id = req.patient_id
+        if patient_id and visit_date:
+            deviations = process_patient_visit(patient_id, visit_date, drug_name)
+            if deviations:
+                print(f"Detected {len(deviations)} deviation(s) for patient {patient_id}")
+    except Exception as e:
+        print(f"Deviation check error: {e}")
+
     return {
         "ae_id": ae_id, "meddra_codes": codes, "severity": severity,
         "sae_flag": sae_flag, "sae_criteria": sae_criteria,

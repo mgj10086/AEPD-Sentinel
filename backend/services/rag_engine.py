@@ -1,12 +1,7 @@
 """RAG Engine - ChromaDB向量检索"""
 import os
-import sys
 
-backend_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if backend_dir not in sys.path:
-    sys.path.insert(0, backend_dir)
-
-from core.config import CHROMA_DIR, CHROMA_COLLECTION
+from backend.core.config import CHROMA_DIR, CHROMA_COLLECTION
 
 try:
     import chromadb

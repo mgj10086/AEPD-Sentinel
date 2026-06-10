@@ -1,13 +1,8 @@
 """Health Check Router"""
 from fastapi import APIRouter
 import time
-import sys, os
 
-backend_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if backend_dir not in sys.path:
-    sys.path.insert(0, backend_dir)
-
-from core.database import get_connection
+from backend.core.database import get_connection
 
 START_TIME = time.time()
 
@@ -19,7 +14,8 @@ def health_check():
     db_ok = False
     try:
         conn = get_connection()
-        conn.execute("SELECT 1")
+        with conn.cursor() as cur:
+            cur.execute("SELECT 1")
         conn.close()
         db_ok = True
     except:
