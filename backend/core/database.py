@@ -93,7 +93,7 @@ def get_db():
 def execute_query(conn, sql, params=None):
     if _engine != "mysql":
         sql = _to_sqlite_sql(sql)
-    cursor = conn.cursor() if _engine == "mysql" else conn
+    cursor = conn.cursor()
     cursor.execute(sql, params or ())
     rows = cursor.fetchall()
     if _engine != "mysql":
@@ -104,7 +104,7 @@ def execute_query(conn, sql, params=None):
 def execute_insert(conn, sql, params=None):
     if _engine != "mysql":
         sql = _to_sqlite_sql(sql)
-    cursor = conn.cursor() if _engine == "mysql" else conn
+    cursor = conn.cursor()
     cursor.execute(sql, params or ())
     return cursor.lastrowid
 
@@ -113,7 +113,7 @@ def init_db():
     _ensure_database()
     conn = get_connection()
     try:
-        cursor = conn.cursor() if _engine == "mysql" else conn
+        cursor = conn.cursor()
 
         if _engine == "mysql":
             def execute(sql):
@@ -243,6 +243,21 @@ def init_db():
                 created_at DATETIME DEFAULT NOW()
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
         """)
+
+        # Migration: add columns that may be missing from older databases
+        _migrations = [
+            ("ae_results", "patient_gender", "VARCHAR(10)"),
+            ("ae_results", "patient_dob", "VARCHAR(50)"),
+            ("sae_reports", "deadline", "VARCHAR(50)"),
+        ]
+        for table, col, col_type in _migrations:
+            try:
+                if _engine == "mysql":
+                    execute(f"ALTER TABLE {table} ADD COLUMN {col} {col_type}")
+                else:
+                    execute(f"ALTER TABLE {table} ADD COLUMN {col} TEXT")
+            except Exception:
+                pass  # Column already exists or unsupported
 
         # Insert default deviation rules (idempotent)
         rules = [

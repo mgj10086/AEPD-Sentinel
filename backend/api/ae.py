@@ -14,10 +14,10 @@ router = APIRouter(prefix="/api/ae", tags=["AE编码"])
 def process_single_ae(req: dict, request: Request):
     ae_text = req.get("ae_text", "").strip()
     if not ae_text:
-        raise HTTPException(status_code=400, detail={"code": 10001, "message": "AE文本为空"})
-    for key in ['visit_id', 'onset_date', 'end_date', 'reporter']:
+        raise HTTPException(status_code=400, detail="AE文本为空")
+    for key in ['patient_id', 'visit_date', 'drug_name', 'visit_id', 'onset_date', 'end_date', 'reporter', 'patient_gender', 'patient_dob']:
         if key not in req:
-            req[key] = None
+            req[key] = "" if key in ('patient_id', 'visit_date', 'drug_name') else None
     result = process_ae(type('obj', (object,), req)())
     # 写入审计日志
     user_id = extract_username_from_token(request.headers.get("Authorization", ""))
@@ -34,9 +34,9 @@ def process_batch_ae(req: dict, request: Request):
     fail_count = 0
     for item in ae_list:
         try:
-            for key in ['visit_id', 'onset_date', 'end_date', 'reporter']:
+            for key in ['patient_id', 'visit_date', 'drug_name', 'visit_id', 'onset_date', 'end_date', 'reporter', 'patient_gender', 'patient_dob']:
                 if key not in item:
-                    item[key] = None
+                    item[key] = "" if key in ('patient_id', 'visit_date', 'drug_name') else None
             result = process_ae(type('obj', (object,), item)())
             results.append(result)
             success_count += 1

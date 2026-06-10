@@ -15,7 +15,7 @@ def process_uploaded_file(file_content: bytes, file_name: str, doc_type: str, de
     item_id = generate_item_id()
     item = {
         "item_id": item_id, "title": file_name, "type": doc_type,
-        "description": description, "status": "processing", "created_at": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+        "description": description, "status": "processing", "created_at": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
     }
     ext = os.path.splitext(file_name)[1].lower()
     content = ""

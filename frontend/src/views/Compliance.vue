@@ -20,7 +20,7 @@
           <div class="score-label">及时性评分</div>
           <el-progress
             type="dashboard"
-            :percentage="data.sae_timeliness ? Math.round(data.sae_timeliness * 100) : 0"
+            :percentage="data.timeliness_score ? Math.round(data.timeliness_score * 100) : 0"
             :color="scoreColor"
           />
         </el-card>
@@ -49,12 +49,12 @@
             <el-table-column prop="report_id" label="报告编号" width="160" />
             <el-table-column label="剩余天数" width="120" align="center">
               <template #default="{ row }">
-                <el-tag :type="getDaysType(row.remaining_days)" size="small">
-                  {{ row.remaining_days }} 天
+                <el-tag :type="getDaysType(row.days_remaining)" size="small">
+                  {{ row.days_remaining ?? '-' }} 天
                 </el-tag>
               </template>
             </el-table-column>
-            <el-table-column prop="deadline" label="截止日期" width="120" align="center" />
+            <el-table-column prop="deadline_7day" label="7日截止" width="120" align="center" />
             <el-table-column prop="status" label="状态" min-width="120" show-overflow-tooltip />
           </el-table>
         </el-card>
@@ -90,6 +90,7 @@ import api from '../api'
 
 const data = reactive({
   overall_score: 0,
+  timeliness_score: 0,
   sae_timeliness: [],
   completeness: 0,
   issues: []
@@ -109,11 +110,17 @@ onMounted(() => {
 async function loadData() {
   try {
     const res = await api.get('/api/compliance/report')
+    const score = res.data.overall_score || 0
     Object.assign(data, {
-      overall_score: res.data.overall_score || 0,
+      overall_score: score,
+      timeliness_score: res.data.timeliness_score || score,
       sae_timeliness: res.data.sae_timeliness || [],
-      completeness: res.data.completeness || res.data.overall_score || 0,
-      issues: res.data.issues || []
+      completeness: res.data.completeness_score || score,
+      issues: (res.data.issues || []).map(issue => ({
+        description: issue,
+        severity: issue.includes('超期') ? 'critical' : 'warning',
+        source: '合规检查'
+      }))
     })
   } catch (e) {
     console.error('加载合规数据失败', e)

@@ -9,10 +9,10 @@
       </template>
       <el-table :data="logs" stripe v-loading="loading" max-height="600">
         <el-table-column prop="log_id" label="日志编号" width="180" />
-        <el-table-column prop="username" label="用户" width="120" />
-        <el-table-column prop="agent" label="智能体" width="130" show-overflow-tooltip>
+        <el-table-column prop="user_id" label="用户" width="120" />
+        <el-table-column prop="agent_type" label="智能体" width="130" show-overflow-tooltip>
           <template #default="{ row }">
-            <el-tag size="small" type="info">{{ row.agent || '-' }}</el-tag>
+            <el-tag size="small" type="info">{{ row.agent_type || '-' }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="action" label="操作" width="130">
@@ -25,8 +25,8 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="resource" label="资源" min-width="180" show-overflow-tooltip />
-        <el-table-column prop="timestamp" label="时间" width="180" align="center" />
+        <el-table-column prop="resource_id" label="资源" min-width="180" show-overflow-tooltip />
+        <el-table-column prop="created_at" label="时间" width="180" align="center" />
       </el-table>
       <el-pagination
         v-model:current-page="page"

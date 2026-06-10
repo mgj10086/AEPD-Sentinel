@@ -86,5 +86,6 @@ def get_compliance_report(period: str = "weekly") -> dict:
             issues.append(f"报告{c['report_id']}缺失字段: {', '.join(c['missing_fields'])}")
     return {
         "sae_timeliness": timeliness, "field_completeness": completeness,
+        "timeliness_score": round(timeliness_score, 2), "completeness_score": round(completeness_score, 2),
         "meddra_consistency": [], "overall_score": overall_score, "issues": issues
     }

@@ -13,8 +13,8 @@
         <el-table-column prop="ae_text" label="AE描述" min-width="200" show-overflow-tooltip />
         <el-table-column label="状态" width="100" align="center">
           <template #default="{ row }">
-            <el-tag :type="row.status === 'draft' ? 'info' : row.status === 'submitted' ? 'success' : 'warning'" size="small">
-              {{ row.status || '草稿' }}
+            <el-tag :type="row.report_status === 'draft' ? 'info' : row.report_status === 'submitted' ? 'success' : 'warning'" size="small">
+              {{ row.report_status || '草稿' }}
             </el-tag>
           </template>
         </el-table-column>
@@ -48,12 +48,12 @@
     <el-dialog v-model="detailVisible" title="SAE报告详情" width="800px" destroy-on-close>
       <el-descriptions v-if="detail" :column="2" border size="small">
         <el-descriptions-item label="报告编号" :span="2">{{ detail.report_id }}</el-descriptions-item>
-        <el-descriptions-item label="患者编号">{{ detail.patient_id || detail.cioms_fields?.patient_id || '-' }}</el-descriptions-item>
-        <el-descriptions-item label="报告人">{{ detail.reporter_name || '-' }}</el-descriptions-item>
-        <el-descriptions-item label="报告机构" :span="2">{{ detail.reporter_org || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="患者编号">{{ detail.patient_id || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="性别">{{ detail.cioms_fields?.patient_gender || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="出生日期" :span="2">{{ detail.cioms_fields?.patient_dob || '-' }}</el-descriptions-item>
         <el-descriptions-item label="状态">
-          <el-tag :type="detail.status === 'draft' ? 'info' : 'success'" size="small">
-            {{ detail.status || '草稿' }}
+          <el-tag :type="detail.report_status === 'draft' ? 'info' : 'success'" size="small">
+            {{ detail.report_status || '草稿' }}
           </el-tag>
         </el-descriptions-item>
         <el-descriptions-item label="创建时间">{{ detail.created_at || '-' }}</el-descriptions-item>

@@ -37,7 +37,7 @@ def write_audit_log(user_id: str, agent_type: str, action: str,
             """, (
                 log_id, user_id, agent_type, action,
                 resource_id, detail,
-                datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+                datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
             ))
     except Exception as e:
         print(f"Audit log write error: {e}")
