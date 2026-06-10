@@ -62,8 +62,8 @@
           <el-descriptions :column="1" border size="small">
             <el-descriptions-item label="AE编号">{{ result.ae_id }}</el-descriptions-item>
             <el-descriptions-item label="MedDRA编码">
-              <el-tag v-for="code in result.meddra_codes" :key="code" type="info" style="margin-right: 4px">
-                {{ code }}
+              <el-tag v-for="(code, idx) in result.meddra_codes" :key="idx" type="info" style="margin-right: 4px">
+                {{ code.pt_name || code.llt_name || code }}
               </el-tag>
             </el-descriptions-item>
             <el-descriptions-item label="严重程度">
@@ -114,8 +114,8 @@
             <el-table-column prop="visit_date" label="访视日期" width="110" />
             <el-table-column label="MedDRA PT" min-width="140">
               <template #default="{ row }">
-                <el-tag v-for="code in (row.meddra_codes || [])" :key="code" size="small" style="margin-right: 4px">
-                  {{ code }}
+                <el-tag v-for="(code, idx) in (row.meddra_codes || [])" :key="idx" size="small" style="margin-right: 4px">
+                  {{ code.pt_name || code.llt_name || code }}
                 </el-tag>
               </template>
             </el-table-column>

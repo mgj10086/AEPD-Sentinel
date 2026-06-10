@@ -2,7 +2,6 @@
 from fastapi import APIRouter, HTTPException, Request
 from datetime import datetime, timedelta
 import jwt
-import jwt as pyjwt
 
 from backend.core.config import MOCK_USERS, SECRET_KEY, ALGORITHM, TOKEN_EXPIRE
 from backend.services.audit_service import extract_username_from_token, write_audit_log

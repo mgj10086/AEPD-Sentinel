@@ -1,6 +1,5 @@
 """Deviation Agent - 方案偏离识别与预警 + 自动检测"""
-import random
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Optional
 from backend.core.database import get_db, execute_insert
 
@@ -76,19 +75,9 @@ def process_patient_visit(patient_id: str, visit_date: str, drug_name: str,
             deviations.append(result)
             save_deviation(result, patient_id)
 
-    # PD-003: 用药依从性不足（模拟——实际项目中需要actual_dose数据）
-    if drug_name and random.random() < 0.15:  # 15%概率模拟
-        deviation = {
-            "deviation_id": generate_deviation_id(),
-            "deviation_type": "用药依从性不足",
-            "rule_id": "PD-003",
-            "severity": "major" if random.random() < 0.3 else "minor",
-            "description": f"患者{patient_id}在{visit_date}访视期间用药依从性低于80%",
-            "action": "alert_cra",
-            "status": "open"
-        }
-        deviations.append(deviation)
-        save_deviation(deviation, patient_id)
+    # PD-003: 用药依从性不足（需actual_dose数据，当前版本暂不自动检测）
+    # 客户接入实际用药数据后，将此注释替换为基于 actual_dose < expected_dose * 0.8 的真实判断逻辑
+    pass
 
     return deviations
 

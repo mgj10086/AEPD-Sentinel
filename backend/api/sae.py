@@ -85,6 +85,30 @@ def update_sae_report(report_id: str, req: dict, request: Request):
     return {"code": 200, "message": "updated", "data": {"report_id": report_id},
             "timestamp": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")}
 
+@router.post("/{report_id}/submit")
+def submit_sae_report(report_id: str, req: dict, request: Request):
+    """提交SAE报告（draft → submitted 状态流转）"""
+    with get_db() as conn:
+        results = execute_query(conn, "SELECT * FROM sae_reports WHERE report_id = %s", (report_id,))
+    if not results:
+        raise HTTPException(status_code=404, detail="SAE报告不存在")
+    report = results[0]
+    if report.get("report_status") == "submitted":
+        raise HTTPException(status_code=400, detail="报告已提交，不可重复提交")
+    submitter = req.get("submitter_name", "")
+    submitter_role = req.get("submitter_role", "")
+    with get_db() as conn:
+        execute_insert(conn,
+            "UPDATE sae_reports SET report_status = 'submitted' WHERE report_id = %s",
+            (report_id,))
+    user_id = extract_username_from_token(request.headers.get("Authorization", ""))
+    write_audit_log(user_id, "sae_report", "submit", report_id,
+                    f"提交SAE报告: 提交人={submitter}({submitter_role})")
+    return {"code": 200, "message": "submitted",
+            "data": {"report_id": report_id, "report_status": "submitted",
+                     "submitted_at": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")},
+            "timestamp": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")}
+
 @router.post("/{report_id}/export")
 def export_sae_report(report_id: str, format: str = Query("json"), request: Request = None):
     with get_db() as conn:

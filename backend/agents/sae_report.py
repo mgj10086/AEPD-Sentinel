@@ -3,7 +3,7 @@ import json
 import random
 from datetime import datetime, timedelta
 from backend.core.database import get_db, execute_query, execute_insert
-from backend.core.config import TRIAL_DRUG
+from backend.core.config import TRIAL_NAME, TRIAL_DRUG, TRIAL_INDICATION
 
 
 def generate_report_id():
@@ -49,11 +49,12 @@ def generate_cioms_fields(ae_record: dict) -> dict:
         "suspect_drug_dose": "",
         "suspect_drug_dates": f"{onset_date_str} - {end_date if isinstance(end_date, str) else 'ongoing'}",
         "concomitant_drugs": [], "reporter_qualification": "Physician",
-        "study_number": "", "sponsor": "申办方", "narrative": narrative,
+        "study_number": TRIAL_NAME, "sponsor": "申办方", "narrative": narrative,
         "causality_method": "WHO-UMC Causality Assessment",
         "causality_score": ae_record.get("causality_tentative", "possible"),
         "dechallenge": "Not applicable", "rechallenge": "Not applicable",
-        "_deadline": deadline_str
+        "_deadline": deadline_str,
+        "_deadline_24h": (datetime.strptime(str(onset_date_str), "%Y-%m-%d") + timedelta(hours=24)).strftime("%Y-%m-%dT%H:%M:%SZ") if onset_date_str else ""
     }
 
 

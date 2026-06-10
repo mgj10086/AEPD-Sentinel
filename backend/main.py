@@ -28,10 +28,11 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# CORS
+# CORS — 生产环境通过 CORS_ORIGINS 环境变量配置允许的域名
+_origins = os.getenv("CORS_ORIGINS", "*").split(",")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

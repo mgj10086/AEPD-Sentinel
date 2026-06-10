@@ -27,15 +27,15 @@ os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
 CHROMA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data", "chroma")
 CHROMA_COLLECTION = "ae_knowledge"
 
-# LLM
-LLM_MODEL = "glm-4"
-LLM_BASE_URL = "https://open.bigmodel.cn/api/paas/v4"
+# LLM (set via environment variables)
+LLM_MODEL = os.getenv("LLM_MODEL", "glm-4")
+LLM_BASE_URL = os.getenv("LLM_BASE_URL", "https://open.bigmodel.cn/api/paas/v4")
 ZHIPU_API_KEY = os.getenv("ZHIPU_API_KEY", "")
 QWEN_API_KEY = os.getenv("QWEN_API_KEY", "")
 
-# APIs
-NCBI_API_KEY = "48ad085bdbd9480a4c9cd14a4470afc83c09"
-FAERS_API_KEY = "Fke2z4izGbpdUgMC845cDYBEQOofQz4bqrXHfNgU"
+# APIs (set via environment variables, never commit real keys)
+NCBI_API_KEY = os.getenv("NCBI_API_KEY", "")
+FAERS_API_KEY = os.getenv("FAERS_API_KEY", "")
 
 # Trial
 TRIAL_NAME = "XK-2025-001"
@@ -58,6 +58,6 @@ MOCK_USERS = {
 }
 
 # JWT
-SECRET_KEY = "ae-sentinel-secret-key-2026"
+SECRET_KEY = os.getenv("JWT_SECRET_KEY", "ae-sentinel-dev-key-change-in-production")
 ALGORITHM = "HS256"
-TOKEN_EXPIRE = 3600
+TOKEN_EXPIRE = int(os.getenv("JWT_EXPIRE_SECONDS", 3600))

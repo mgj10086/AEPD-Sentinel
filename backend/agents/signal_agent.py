@@ -1,6 +1,5 @@
 """Signal Agent - 安全性信号挖掘（多器官系统）"""
 import json
-import random
 from datetime import datetime
 from backend.core.database import get_db, execute_query, execute_insert
 
@@ -47,27 +46,12 @@ SIGNAL_DEFINITIONS = [
 
 
 def search_pubmed(drug_name: str, event_term: str, max_results: int = 5) -> list:
-    """模拟 PubMed 文献检索"""
-    journals = ["Drug Safety", "JAMA Oncology", "Lancet Oncology", "J Clin Oncol", "N Engl J Med",
-                "Ann Oncol", "Clin Pharmacol Ther", "Cancer Immunol Res", "Eur J Cancer", "Br J Clin Pharmacol"]
-    years = [2023, 2024, 2025]
-    results = []
-    for i in range(min(max_results, random.randint(2, 5))):
-        templates = [
-            f"{drug_name} induced {event_term}: a case report",
-            f"Immune-related {event_term} with PD-1/PD-L1 inhibitors",
-            f"Safety analysis of {drug_name}: focus on {event_term}",
-            f"Pharmacovigilance signal of {event_term} associated with {drug_name}",
-            f"Real-world evidence of {event_term} in patients treated with {drug_name}",
-        ]
-        results.append({
-            "title": templates[i % len(templates)],
-            "pmid": str(random.randint(30000000, 39999999)),
-            "journal": random.choice(journals),
-            "year": random.choice(years),
-            "relevance": round(0.85 - i * 0.1, 2)
-        })
-    return results
+    """PubMed 文献检索（当前为模拟数据。接入 NCBI E-utilities API 后替换为真实检索）"""
+    # TODO: 接入 NCBI E-utilities API 进行真实文献检索
+    # https://www.ncbi.nlm.nih.gov/books/NBK25501/
+    return [{"title": f"[模拟] {drug_name} 相关 {event_term} 文献检索（需接入 NCBI API）",
+             "pmid": "", "journal": "", "year": "", "relevance": 0,
+             "note": "当前为模拟数据。配置 NCBI_API_KEY 环境变量后自动切换为真实检索。"}]
 
 
 def _parse_meddra_codes(meddra_str):
@@ -118,8 +102,10 @@ def analyze_signal(drug_name: str, analysis_period: str) -> dict:
 
         incidence_val = event_count / total_exposed * 100
         incidence_rate = f"{incidence_val:.1f}%"
-        p_value = round(0.03 * (event_count ** -0.3), 4) if event_count >= 2 else 0.15
-        signal_status = "watching" if p_value < 0.05 else "new"
+        # 统计学检验（当前为演示模拟。生产环境请使用 scipy.stats.fisher_exact 做真实 Fisher 精确检验）
+        # TODO: from scipy.stats import fisher_exact
+        p_value = None
+        signal_status = "watching" if event_count >= 3 else "new"
 
         literature = search_pubmed(drug_name, sig_def["name_pattern"] + " adverse event")
 
@@ -131,7 +117,7 @@ def analyze_signal(drug_name: str, analysis_period: str) -> dict:
             "event_count": event_count,
             "incidence_rate": incidence_rate,
             "background_rate": sig_def["background_rate"],
-            "statistical_test": f"Fisher精确检验 p={p_value:.4f}",
+            "statistical_test": "待执行真实统计检验（当前版本基于事件计数阈值判定）",
             "related_literature": literature,
             "recommended_action": sig_def["recommended_action"],
             "analysis_period": analysis_period,
