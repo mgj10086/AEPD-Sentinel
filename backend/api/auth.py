@@ -1,6 +1,7 @@
 """Auth Router - 认证接口"""
 from fastapi import APIRouter, HTTPException, Request
 from datetime import datetime, timedelta
+import hashlib
 import jwt
 
 from backend.core.config import MOCK_USERS, SECRET_KEY, ALGORITHM, TOKEN_EXPIRE
@@ -14,7 +15,7 @@ def login(req: dict, request: Request):
     password = req.get("password", "")
     role = req.get("role", "")
     user = MOCK_USERS.get(username)
-    if not user or user["password"] != password:
+    if not user or user["password_hash"] != hashlib.sha256(password.encode()).hexdigest():
         raise HTTPException(status_code=401, detail="用户名或密码错误")
     token = jwt.encode(
         {"sub": username, "role": user["role"], "name": user["name"],

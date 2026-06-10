@@ -18,7 +18,7 @@ print('='*60)
 
 # 1. Login
 print('\n[1] 登录测试')
-r = api('/api/auth/login', 'POST', {'username': 'pv_user', 'password': '123456'})
+r = api('/api/auth/login', 'POST', {'username': 'pv_user', 'password': 'pv123456'})
 print(f'  结果: code={r["code"]}, role={r["data"]["role"]}')
 assert r['code'] == 200
 

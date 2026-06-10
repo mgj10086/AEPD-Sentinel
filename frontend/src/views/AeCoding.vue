@@ -24,6 +24,21 @@
             <el-form-item label="药物名称" prop="drug_name">
               <el-input v-model="form.drug_name" placeholder="如 XK-001" />
             </el-form-item>
+            <el-row :gutter="12">
+              <el-col :span="12">
+                <el-form-item label="性别">
+                  <el-select v-model="form.patient_gender" placeholder="选择性别" style="width:100%">
+                    <el-option label="男" value="男" />
+                    <el-option label="女" value="女" />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="出生日期">
+                  <el-date-picker v-model="form.patient_dob" type="date" placeholder="可选" value-format="YYYY-MM-DD" style="width:100%" />
+                </el-form-item>
+              </el-col>
+            </el-row>
             <el-form-item label="AE描述" prop="ae_text">
               <el-input
                 v-model="form.ae_text"
@@ -187,7 +202,9 @@ const form = reactive({
   visit_date: '',
   drug_name: 'XK-001',
   ae_text: '',
-  onset_date: ''
+  onset_date: '',
+  patient_gender: '',
+  patient_dob: ''
 })
 
 onMounted(() => {
@@ -209,6 +226,8 @@ function resetForm() {
   form.drug_name = 'XK-001'
   form.ae_text = ''
   form.onset_date = ''
+  form.patient_gender = ''
+  form.patient_dob = ''
   result.value = null
 }
 
@@ -224,7 +243,9 @@ async function submitAe() {
       patient_id: form.patient_id,
       visit_date: form.visit_date,
       drug_name: form.drug_name,
-      onset_date: form.onset_date || undefined
+      onset_date: form.onset_date || undefined,
+      patient_gender: form.patient_gender || undefined,
+      patient_dob: form.patient_dob || undefined
     })
     result.value = res.data
     ElMessage.success('AE编码分析完成')

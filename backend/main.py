@@ -1,5 +1,5 @@
 """AE Sentinel - Main FastAPI Application"""
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -8,6 +8,7 @@ import time
 
 from backend.core.config import PORT, HOST
 from backend.core.database import init_db
+from backend.core.rate_limit import rate_limit_middleware
 
 # Import all routers
 from backend.api.auth import router as auth_router
@@ -37,6 +38,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Rate limiting middleware (120 req/min per client)
+@app.middleware("http")
+async def rate_limit(request: Request, call_next):
+    return await rate_limit_middleware(request, call_next)
 
 # Register all routers
 app.include_router(auth_router)

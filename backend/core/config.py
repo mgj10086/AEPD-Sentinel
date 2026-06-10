@@ -50,11 +50,13 @@ EXPECTED_AES = [
     "贫血", "血小板减少", "中性粒细胞减少"
 ]
 
-# Mock auth
+# Mock auth (密码使用 SHA256 哈希存储)
+import hashlib
+def _hash(pw): return hashlib.sha256(pw.encode()).hexdigest()
 MOCK_USERS = {
-    "pv_user": {"password": "123456", "role": "pv_specialist", "name": "张医生"},
-    "cra_user": {"password": "123456", "role": "cra", "name": "李监查"},
-    "admin_user": {"password": "123456", "role": "admin", "name": "管理员"},
+    "pv_user": {"password_hash": _hash("pv123456"), "role": "pv_specialist", "name": "张医生"},
+    "cra_user": {"password_hash": _hash("cra123456"), "role": "cra", "name": "李监查"},
+    "admin_user": {"password_hash": _hash("admin123456"), "role": "admin", "name": "管理员"},
 }
 
 # JWT

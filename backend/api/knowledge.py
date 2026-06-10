@@ -5,13 +5,26 @@ from typing import Optional
 
 from backend.core.database import get_db, execute_query, execute_insert
 from backend.services.knowledge_service import process_uploaded_file
+from backend.services.rag_engine import search_documents
 from backend.services.audit_service import extract_username_from_token, write_audit_log
 
 router = APIRouter(prefix="/api/admin/knowledge", tags=["知识库管理"])
 
+# 上传限制
+MAX_UPLOAD_SIZE = 10 * 1024 * 1024  # 10MB
+ALLOWED_EXTENSIONS = {".md", ".csv", ".txt", ".pdf", ".json"}
+
 @router.post("/upload")
 async def upload_knowledge(file: UploadFile = File(...), type: str = Form(...), description: str = Form(""), request: Request = None):
+    # 文件类型校验
+    import os
+    ext = os.path.splitext(file.filename or "")[1].lower()
+    if ext not in ALLOWED_EXTENSIONS:
+        raise HTTPException(status_code=400, detail=f"不支持的文件类型: {ext}。支持: {', '.join(ALLOWED_EXTENSIONS)}")
+    # 文件大小校验
     content = await file.read()
+    if len(content) > MAX_UPLOAD_SIZE:
+        raise HTTPException(status_code=400, detail=f"文件过大（{len(content)/1024/1024:.1f}MB），最大允许10MB")
     result = process_uploaded_file(content, file.filename, type, description)
     # 写入审计日志
     user_id = extract_username_from_token(request.headers.get("Authorization", "")) if request else "anonymous"
@@ -42,6 +55,17 @@ def get_list(type: Optional[str] = Query(None), page: int = Query(1, ge=1), page
         items = execute_query(conn, f"SELECT * FROM knowledge_items WHERE {where} ORDER BY created_at DESC LIMIT {page_size} OFFSET {offset}", params)
     return {"code": 200, "message": "success",
             "data": {"items": items, "total": total, "page": page, "page_size": page_size},
+            "timestamp": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")}
+
+@router.get("/search")
+def search_knowledge(query: str = Query(..., min_length=1), n_results: int = Query(5, ge=1, le=20)):
+    """向量检索知识库"""
+    results = search_documents(query, n_results=n_results)
+    items = []
+    for doc, meta in results:
+        items.append({"content": doc[:500], "metadata": meta, "score": meta.get("distance", 0) if meta else 0})
+    return {"code": 200, "message": "success",
+            "data": {"query": query, "results": items, "total": len(items)},
             "timestamp": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")}
 
 @router.delete("/{item_id}")

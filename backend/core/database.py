@@ -134,6 +134,8 @@ def init_db():
                 onset_date VARCHAR(50),
                 end_date VARCHAR(50),
                 reporter VARCHAR(100),
+                patient_gender VARCHAR(10),
+                patient_dob VARCHAR(50),
                 meddra_codes TEXT,
                 severity VARCHAR(20),
                 sae_flag TINYINT DEFAULT 0,

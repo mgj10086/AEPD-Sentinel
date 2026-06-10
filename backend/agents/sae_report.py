@@ -40,7 +40,8 @@ def generate_cioms_fields(ae_record: dict) -> dict:
         narrative += "该事件判定为严重不良事件。"
     return {
         "patient_initials": ae_record.get("patient_id", "UNK")[:3],
-        "patient_dob": "", "patient_gender": "",
+        "patient_dob": ae_record.get("patient_dob", "") or "",
+        "patient_gender": ae_record.get("patient_gender", "") or "",
         "ae_description": ae_record.get("ae_text", ""),
         "ae_start_date": onset_date_str or "",
         "ae_end_date": end_date if isinstance(end_date, str) else "",
