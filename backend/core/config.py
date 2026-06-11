@@ -63,3 +63,6 @@ MOCK_USERS = {
 SECRET_KEY = os.getenv("JWT_SECRET_KEY", "ae-sentinel-dev-key-change-in-production")
 ALGORITHM = "HS256"
 TOKEN_EXPIRE = int(os.getenv("JWT_EXPIRE_SECONDS", 3600))
+
+# Audit log HMAC key (for tamper-evident hash chain)
+AUDIT_HMAC_KEY = os.getenv("AUDIT_HMAC_KEY", "ae-sentinel-audit-dev-key")
