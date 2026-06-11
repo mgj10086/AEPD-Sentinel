@@ -244,6 +244,38 @@ def init_db():
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
         """)
 
+        # Users (P2: migrate from MOCK_USERS to DB-backed)
+        execute("""
+            CREATE TABLE IF NOT EXISTS users (
+                user_id VARCHAR(50) PRIMARY KEY,
+                username VARCHAR(100) NOT NULL UNIQUE,
+                password_hash VARCHAR(256) NOT NULL,
+                name VARCHAR(100),
+                role VARCHAR(50) DEFAULT 'cra',
+                email VARCHAR(200),
+                phone VARCHAR(50),
+                is_active TINYINT DEFAULT 1,
+                created_at DATETIME DEFAULT NOW(),
+                updated_at DATETIME DEFAULT NOW() ON UPDATE NOW()
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+        """)
+        # Seed default users (idempotent)
+        import hashlib
+        _default_users = [
+            ('USR-001', 'pv_user',    hashlib.sha256(b'pv123456').hexdigest(),   '张医生', 'pv_specialist'),
+            ('USR-002', 'cra_user',   hashlib.sha256(b'cra123456').hexdigest(),  '李监查', 'cra'),
+            ('USR-003', 'admin_user', hashlib.sha256(b'admin123456').hexdigest(), '管理员', 'admin'),
+        ]
+        for uid, uname, phash, name, role in _default_users:
+            if _engine == "mysql":
+                cursor.execute(
+                    "INSERT IGNORE INTO users (user_id, username, password_hash, name, role) VALUES (%s, %s, %s, %s, %s)",
+                    (uid, uname, phash, name, role))
+            else:
+                cursor.execute(
+                    "INSERT OR IGNORE INTO users (user_id, username, password_hash, name, role) VALUES (?, ?, ?, ?, ?)",
+                    (uid, uname, phash, name, role))
+
         # Migration: add columns that may be missing from older databases
         _migrations = [
             ("ae_results", "patient_gender", "VARCHAR(10)"),
