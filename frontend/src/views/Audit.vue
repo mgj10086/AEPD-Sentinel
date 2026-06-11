@@ -4,7 +4,10 @@
       <template #header>
         <div class="card-header">
           <span>审计日志</span>
-          <el-button text type="primary" @click="loadLogs">刷新</el-button>
+          <div class="header-actions">
+            <el-button text type="primary" @click="verifyChain" :loading="verifying">验证链</el-button>
+            <el-button text type="primary" @click="loadLogs">刷新</el-button>
+          </div>
         </div>
       </template>
       <el-table :data="logs" stripe v-loading="loading" max-height="600">
@@ -36,11 +39,30 @@
         @current-change="loadLogs"
       />
     </el-card>
+
+    <!-- 哈希链验证结果对话框 -->
+    <el-dialog v-model="verifyVisible" title="审计日志完整性验证" width="600px" top="5vh">
+      <el-alert
+        :type="verifyResult?.valid ? 'success' : 'error'"
+        :title="verifyResult?.valid ? '✅ 哈希链验证通过，日志未被篡改' : '❌ 发现篡改！'"
+        show-icon
+        :description="verifyResult ? `共检查 ${verifyResult.checked} 条带 HMAC 的日志，总记录 ${verifyResult.total} 条` : ''"
+      />
+      <el-table v-if="verifyResult?.issues?.length" :data="verifyResult.issues" stripe max-height="400" style="margin-top: 12px">
+        <el-table-column prop="log_id" label="被篡改日志" width="200" />
+        <el-table-column label="说明">
+          <template #default>
+            <span style="color: #f56c6c">HMAC 不匹配 — 数据已被篡改</span>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-dialog>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { ElMessage } from 'element-plus'
 import api from '../api'
 
 const logs = ref([])
@@ -48,6 +70,9 @@ const loading = ref(false)
 const page = ref(1)
 const pageSize = ref(50)
 const total = ref(0)
+const verifying = ref(false)
+const verifyVisible = ref(false)
+const verifyResult = ref(null)
 
 onMounted(() => {
   loadLogs()
@@ -65,6 +90,19 @@ async function loadLogs() {
     console.error('加载审计日志失败', e)
   } finally {
     loading.value = false
+  }
+}
+
+async function verifyChain() {
+  verifying.value = true
+  try {
+    const res = await api.post('/api/admin/audit-logs/verify')
+    verifyResult.value = res.data
+    verifyVisible.value = true
+  } catch (e) {
+    console.error('验证失败', e)
+  } finally {
+    verifying.value = false
   }
 }
 
@@ -87,5 +125,9 @@ function getActionType(action) {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+.header-actions {
+  display: flex;
+  gap: 8px;
 }
 </style>
