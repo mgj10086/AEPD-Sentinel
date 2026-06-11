@@ -51,13 +51,8 @@ EXPECTED_AES = [
 ]
 
 # Mock auth (密码使用 SHA256 哈希存储)
-import hashlib
-def _hash(pw): return hashlib.sha256(pw.encode()).hexdigest()
-MOCK_USERS = {
-    "pv_user": {"password_hash": _hash("pv123456"), "role": "pv_specialist", "name": "张医生"},
-    "cra_user": {"password_hash": _hash("cra123456"), "role": "cra", "name": "李监查"},
-    "admin_user": {"password_hash": _hash("admin123456"), "role": "admin", "name": "管理员"},
-}
+# 注意：用户数据已迁移到 users 表，参见 user_service.py
+# MOCK_USERS 字典已移除，保留 _hash 函数兼容性引用
 
 # JWT
 SECRET_KEY = os.getenv("JWT_SECRET_KEY", "ae-sentinel-dev-key-change-in-production")
