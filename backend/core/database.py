@@ -276,6 +276,21 @@ def init_db():
                     "INSERT OR IGNORE INTO users (user_id, username, password_hash, name, role) VALUES (?, ?, ?, ?, ?)",
                     (uid, uname, phash, name, role))
 
+        # Notifications (P2: in-app notification system)
+        execute("""
+            CREATE TABLE IF NOT EXISTS notifications (
+                notification_id VARCHAR(50) PRIMARY KEY,
+                user_id VARCHAR(100) NOT NULL,
+                title VARCHAR(200) NOT NULL,
+                message TEXT,
+                notification_type VARCHAR(50) DEFAULT 'info',
+                resource_type VARCHAR(50),
+                resource_id VARCHAR(50),
+                is_read TINYINT DEFAULT 0,
+                created_at DATETIME DEFAULT NOW()
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+        """)
+
         # Migration: add columns that may be missing from older databases
         _migrations = [
             ("ae_results", "patient_gender", "VARCHAR(10)"),

@@ -96,6 +96,20 @@ def save_deviation(deviation: dict, patient_id: str, visit_id: str = None):
                 deviation["severity"], deviation["description"],
                 deviation["action"], deviation["status"]
             ))
+        # P2: 对 alert_cra 类型的偏离自动产生通知
+        if deviation.get("action") == "alert_cra":
+            try:
+                from backend.services.notification_service import create_notification
+                create_notification(
+                    user_id="cra_user",
+                    title=f"新方案偏离: {deviation.get('deviation_type', '')}",
+                    message=deviation.get("description", "")[:200],
+                    notification_type="alert",
+                    resource_type="deviation",
+                    resource_id=deviation["deviation_id"]
+                )
+            except Exception as notif_e:
+                print(f"Deviation notification error: {notif_e}")
         return True
     except Exception as e:
         print(f"DB save deviation error: {e}")
