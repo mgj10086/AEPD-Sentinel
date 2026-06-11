@@ -12,37 +12,9 @@
         active-text-color="#409EFF"
         router
       >
-        <el-menu-item index="/dashboard">
-          <el-icon><DataAnalysis /></el-icon>
-          <span>仪表盘</span>
-        </el-menu-item>
-        <el-menu-item index="/ae">
-          <el-icon><EditPen /></el-icon>
-          <span>AE编码</span>
-        </el-menu-item>
-        <el-menu-item index="/sae">
-          <el-icon><Document /></el-icon>
-          <span>SAE报告</span>
-        </el-menu-item>
-        <el-menu-item index="/deviation">
-          <el-icon><WarningFilled /></el-icon>
-          <span>方案偏离</span>
-        </el-menu-item>
-        <el-menu-item index="/signal">
-          <el-icon><TrendCharts /></el-icon>
-          <span>信号挖掘</span>
-        </el-menu-item>
-        <el-menu-item index="/compliance">
-          <el-icon><CircleCheckFilled /></el-icon>
-          <span>合规质控</span>
-        </el-menu-item>
-        <el-menu-item index="/knowledge">
-          <el-icon><Collection /></el-icon>
-          <span>知识库</span>
-        </el-menu-item>
-        <el-menu-item index="/audit">
-          <el-icon><Clock /></el-icon>
-          <span>审计日志</span>
+        <el-menu-item v-for="item in visibleRoutes" :key="item.path" :index="'/' + item.path">
+          <el-icon><component :is="item.icon" /></el-icon>
+          <span>{{ item.meta?.title || item.path }}</span>
         </el-menu-item>
       </el-menu>
     </el-aside>
@@ -128,6 +100,34 @@ const route = useRoute()
 const router = useRouter()
 const store = useAppStore()
 
+// ---- 角色菜单 ----
+import {
+  DataAnalysis, EditPen, Document, WarningFilled,
+  TrendCharts, CircleCheckFilled, Collection, Clock, User
+} from '@element-plus/icons-vue'
+
+const roleIconMap = {
+  dashboard: DataAnalysis,
+  ae: EditPen,
+  sae: Document,
+  deviation: WarningFilled,
+  signal: TrendCharts,
+  compliance: CircleCheckFilled,
+  knowledge: Collection,
+  audit: Clock,
+  users: User
+}
+
+const allChildRoutes = router.options.routes.find(r => r.path === '/')?.children || []
+
+const visibleRoutes = computed(() => {
+  const userRole = store.user?.role
+  return allChildRoutes
+    .filter(r => !r.meta?.roles || r.meta.roles.includes(userRole))
+    .map(r => ({ ...r, icon: roleIconMap[r.path] || Document }))
+})
+
+// ----
 const activeMenu = computed(() => route.path)
 const pageTitle = computed(() => route.meta?.title || 'AE Sentinel')
 
