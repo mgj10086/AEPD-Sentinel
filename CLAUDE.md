@@ -3,6 +3,7 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 @规则参见：d:/Users/Administrator/Documents/Obsidian Vault/Claude相关/项目启动宪法.md
+@全局上下文	
 
 ## Project Overview
 

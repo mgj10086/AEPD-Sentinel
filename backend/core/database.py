@@ -249,6 +249,10 @@ def init_db():
             ("ae_results", "patient_gender", "VARCHAR(10)"),
             ("ae_results", "patient_dob", "VARCHAR(50)"),
             ("sae_reports", "deadline", "VARCHAR(50)"),
+            # P2: audit log HMAC chain columns
+            ("audit_logs", "prev_log_id", "VARCHAR(50)"),
+            ("audit_logs", "prev_hmac", "VARCHAR(128)"),
+            ("audit_logs", "hmac", "VARCHAR(128)"),
         ]
         for table, col, col_type in _migrations:
             try:
