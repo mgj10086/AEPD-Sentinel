@@ -7,6 +7,38 @@ export const useAppStore = defineStore('app', () => {
 
   const isLoggedIn = computed(() => !!token.value)
 
+  // ---- 全局 loading/error 三态 ----
+  const activeRequests = ref(0)
+  const globalLoading = ref(false)
+  const globalLoadingText = ref('')
+  const globalError = ref(null) // { message, retry? }
+
+  function startLoading(text = '加载中...') {
+    activeRequests.value++
+    globalLoading.value = true
+    globalLoadingText.value = text
+  }
+
+  function stopLoading() {
+    activeRequests.value = Math.max(0, activeRequests.value - 1)
+    if (activeRequests.value === 0) {
+      globalLoading.value = false
+      globalLoadingText.value = ''
+    }
+  }
+
+  function setError(err) {
+    globalError.value = err
+    globalLoading.value = false
+    activeRequests.value = 0
+  }
+
+  function clearError() {
+    globalError.value = null
+  }
+
+  // ----
+
   function login(userData, authToken) {
     token.value = authToken
     user.value = userData
@@ -21,5 +53,7 @@ export const useAppStore = defineStore('app', () => {
     localStorage.removeItem('ae_user')
   }
 
-  return { token, user, isLoggedIn, login, logout }
+  return { token, user, isLoggedIn, login, logout,
+           globalLoading, globalLoadingText, globalError,
+           startLoading, stopLoading, setError, clearError }
 })
