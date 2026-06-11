@@ -16,6 +16,7 @@ PyJWT>=2.8.0
 
 # Document Export
 python-docx>=0.8.11
+fpdf2>=2.7.0
 
 # HTTP File Upload
 python-multipart>=0.0.5
