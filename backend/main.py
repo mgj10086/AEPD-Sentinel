@@ -22,6 +22,7 @@ from backend.api.audit import router as audit_router
 from backend.api.health import router as health_router
 from backend.api.users import router as users_router
 from backend.api.notifications import router as notifications_router
+from backend.api.admin import router as admin_router
 
 START_TIME = time.time()
 
@@ -58,6 +59,7 @@ app.include_router(audit_router)
 app.include_router(health_router)
 app.include_router(users_router)
 app.include_router(notifications_router)
+app.include_router(admin_router)
 
 # Serve frontend
 FRONTEND_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "frontend")
