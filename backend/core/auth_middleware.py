@@ -1,4 +1,5 @@
 """Auth Middleware — JWT 角色权限验证"""
+import inspect
 from functools import wraps
 from fastapi import HTTPException, Request
 from backend.core.config import SECRET_KEY, ALGORITHM
@@ -54,7 +55,13 @@ def require_role(*allowed_roles: str):
                 if user_role not in allowed_roles:
                     raise HTTPException(status_code=403, detail="没有权限执行此操作")
 
-            return await func(*args, **kwargs)
+            # 兼容同步和异步路由函数
+            result = func(*args, **kwargs)
+            if inspect.iscoroutine(result):
+                return await result
+            return result
+        # 保留原始函数签名，确保 FastAPI 能正确推断参数
+        wrapper.__signature__ = inspect.signature(func)
         return wrapper
     return decorator
 
