@@ -3,21 +3,18 @@
 # 启动: docker-compose up -d
 # 停止: docker-compose down
 
-version: "3.8"
-
 services:
-  # ========== 核心应用 ==========
+  # ========== 核心应用（多阶段构建） ==========
   ae-sentinel:
     build: .
     container_name: ae-sentinel-app
     ports:
-      - "8000:8000"
+      - "80:80"
     volumes:
+      # 仅持久化数据（代码已构建到镜像中，不再挂载开发目录）
       - ./data:/app/data
-      - ./backend:/app/backend
-      - ./frontend:/app/frontend
-      - ./lib:/app/lib
     environment:
+      - DATABASE_ENGINE=sqlite
       - ZHIPU_API_KEY=${ZHIPU_API_KEY:-}
       - QWEN_API_KEY=${QWEN_API_KEY:-}
     depends_on:
@@ -42,7 +39,6 @@ services:
       - ae-network
 
   # ========== 本地LLM (可选) ==========
-  # 如需使用本地大模型，取消以下注释
   # ollama:
   #   image: ollama/ollama:latest
   #   container_name: ae-sentinel-ollama
