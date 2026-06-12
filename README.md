@@ -33,33 +33,7 @@
 
 ## 🏗️ Architecture
 
-```
-                  ┌──────────────────────────────┐
-                  │       Vue3 Frontend           │
-                  │  Element Plus · ECharts ·     │
-                  │  Pinia · Role-based Sidebar   │
-                  └──────────────┬───────────────┘
-                                 │ HTTP/REST
-                  ┌──────────────▼───────────────┐
-                  │     FastAPI Backend            │
-                  │                                │
-                  │  ┌──────┐  ┌──────────┐       │
-                  │  │ API  │→│ Agent    │       │
-                  │  │Layer │  │ Layer    │       │
-                  │  └──────┘  └────┬─────┘       │
-                  │                 │              │
-                  │  ┌──────────────▼──────┐       │
-                  │  │  Service Layer      │       │
-                  │  │  RAG · Export ·     │       │
-                  │  │  Audit · Notify     │       │
-                  │  └─────────────────────┘       │
-                  └──────┬────────────┬────────────┘
-                         │            │
-                  ┌──────▼──┐  ┌──────▼──────┐
-                  │  MySQL/ │  │  ChromaDB   │
-                  │  SQLite │  │  (Vector)   │
-                  └─────────┘  └─────────────┘
-```
+![Architecture Diagram](图片/architecture.svg)
 
 **Three-layer separation**: API Router → Agent (business logic) → Service (infrastructure)
 
@@ -177,7 +151,7 @@ AEPD Sentinel/
 
 ## 🤝 Contributing
 
-See [CONTRIBUTING.md](.github/CONTRIBUTING.md) for guidelines.
+See [CONTRIBUTING.md](.github/CONTRIBUTING.md) for guidelines. This project follows the [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.md).
 
 Areas welcome for contribution:
 - LLM integration (Zhipu/Qwen API endpoints are pre-configured)

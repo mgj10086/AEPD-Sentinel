@@ -2,6 +2,8 @@
 
 Thank you for your interest in contributing! 🎉
 
+> **Note:** Please read our [Code of Conduct](CODE_OF_CONDUCT.md) before participating. All contributors are expected to adhere to it.
+
 ## How to Contribute
 
 ### 🐛 Bug Reports
