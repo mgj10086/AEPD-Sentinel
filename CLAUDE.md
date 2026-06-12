@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 @规则参见：d:/Users/Administrator/Documents/Obsidian Vault/Claude相关/项目启动宪法.md
 
-> Memory 配置：项目初始化时将 `Claude相关/通用Memory内容.md` 复制到 `.claude/projects/<hash>/memory/`，详见 [[template/通用Memory模板.md]]
+> [[上下文复利机制]] — 关键决策/学习突破自动写入 Memory 跨会话复用
 
 ## Project Overview
 
