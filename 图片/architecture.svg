@@ -1,0 +1,310 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 820">
+  <defs>
+    <!-- Background grid -->
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e2d3d" stroke-width="0.5"/>
+    </pattern>
+
+    <!-- Arrow markers -->
+    <marker id="arrow-cyan" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#22d3ee"/>
+    </marker>
+    <marker id="arrow-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#34d399"/>
+    </marker>
+    <marker id="arrow-orange" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#fb923c"/>
+    </marker>
+    <marker id="arrow-blue" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#60a5fa"/>
+    </marker>
+    <marker id="arrow-rose" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#fb7185"/>
+    </marker>
+
+    <!-- Glow filter -->
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+
+    <!-- Drop shadow -->
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap');
+    text { font-family: 'JetBrains Mono', 'Noto Sans SC', 'PingFang SC', monospace; }
+  </style>
+
+  <!-- Background -->
+  <rect width="1100" height="820" fill="#1a1a2e"/>
+  <rect width="1100" height="820" fill="url(#grid)"/>
+
+  <!-- Title -->
+  <text x="30" y="34" fill="#ffffff" font-size="18" font-weight="700">AE Sentinel — System Architecture</text>
+  <text x="30" y="52" fill="#94a3b8" font-size="10">Clinical Trial Adverse Event Intelligent Monitoring Platform</text>
+
+  <!-- Docker boundary -->
+  <rect x="15" y="65" width="1070" height="740" rx="14" fill="none" stroke="#60a5fa" stroke-width="1.5" stroke-dasharray="10,5" opacity="0.6"/>
+  <rect x="25" y="58" width="200" height="14" fill="#1a1a2e"/>
+  <text x="30" y="69" fill="#60a5fa" font-size="9" font-weight="600">🐳 Docker Compose</text>
+
+  <!-- ===== LAYER 1: FRONTEND ===== -->
+  <rect x="30" y="85" width="1040" height="175" rx="10" fill="none" stroke="#22d3ee" stroke-width="1" opacity="0.4"/>
+  <rect x="40" y="78" width="220" height="14" fill="#1a1a2e"/>
+  <text x="45" y="89" fill="#22d3ee" font-size="9" font-weight="600">🖥️ Presentation Layer — Vue3 SPA</text>
+
+  <!-- Frontend boxes row 1 -->
+  <g filter="url(#shadow)">
+    <!-- Dashboard -->
+    <rect x="45" y="100" width="108" height="46" rx="6" fill="#1a1a2e"/>
+    <rect x="45" y="100" width="108" height="46" rx="6" fill="rgba(8,51,68,0.5)" stroke="#22d3ee" stroke-width="1.2"/>
+    <text x="99" y="121" fill="#e2e8f0" font-size="10" font-weight="600" text-anchor="middle">📊 Dashboard</text>
+    <text x="99" y="137" fill="#94a3b8" font-size="8" text-anchor="middle">ECharts</text>
+
+    <!-- AE Coding -->
+    <rect x="166" y="100" width="108" height="46" rx="6" fill="#1a1a2e"/>
+    <rect x="166" y="100" width="108" height="46" rx="6" fill="rgba(8,51,68,0.5)" stroke="#22d3ee" stroke-width="1.2"/>
+    <text x="220" y="121" fill="#e2e8f0" font-size="10" font-weight="600" text-anchor="middle">🏷️ AE Coding</text>
+    <text x="220" y="137" fill="#94a3b8" font-size="8" text-anchor="middle">MedDRA</text>
+
+    <!-- SAE Reports -->
+    <rect x="287" y="100" width="108" height="46" rx="6" fill="#1a1a2e"/>
+    <rect x="287" y="100" width="108" height="46" rx="6" fill="rgba(8,51,68,0.5)" stroke="#22d3ee" stroke-width="1.2"/>
+    <text x="341" y="121" fill="#e2e8f0" font-size="10" font-weight="600" text-anchor="middle">📋 SAE Reports</text>
+    <text x="341" y="137" fill="#94a3b8" font-size="8" text-anchor="middle">CIOMS-I</text>
+
+    <!-- Deviations -->
+    <rect x="408" y="100" width="108" height="46" rx="6" fill="#1a1a2e"/>
+    <rect x="408" y="100" width="108" height="46" rx="6" fill="rgba(8,51,68,0.5)" stroke="#22d3ee" stroke-width="1.2"/>
+    <text x="462" y="121" fill="#e2e8f0" font-size="10" font-weight="600" text-anchor="middle">⚠️ Deviations</text>
+    <text x="462" y="137" fill="#94a3b8" font-size="8" text-anchor="middle">7 Rules</text>
+
+    <!-- Signals -->
+    <rect x="529" y="100" width="108" height="46" rx="6" fill="#1a1a2e"/>
+    <rect x="529" y="100" width="108" height="46" rx="6" fill="rgba(8,51,68,0.5)" stroke="#22d3ee" stroke-width="1.2"/>
+    <text x="583" y="121" fill="#e2e8f0" font-size="10" font-weight="600" text-anchor="middle">📈 Signals</text>
+    <text x="583" y="137" fill="#94a3b8" font-size="8" text-anchor="middle">Fisher's Test</text>
+
+    <!-- Compliance -->
+    <rect x="650" y="100" width="108" height="46" rx="6" fill="#1a1a2e"/>
+    <rect x="650" y="100" width="108" height="46" rx="6" fill="rgba(8,51,68,0.5)" stroke="#22d3ee" stroke-width="1.2"/>
+    <text x="704" y="121" fill="#e2e8f0" font-size="10" font-weight="600" text-anchor="middle">✅ Compliance</text>
+    <text x="704" y="137" fill="#94a3b8" font-size="8" text-anchor="middle">GCP Audit</text>
+
+    <!-- Knowledge Base -->
+    <rect x="771" y="100" width="108" height="46" rx="6" fill="#1a1a2e"/>
+    <rect x="771" y="100" width="108" height="46" rx="6" fill="rgba(8,51,68,0.5)" stroke="#22d3ee" stroke-width="1.2"/>
+    <text x="825" y="121" fill="#e2e8f0" font-size="10" font-weight="600" text-anchor="middle">📚 Knowledge</text>
+    <text x="825" y="137" fill="#94a3b8" font-size="8" text-anchor="middle">RAG</text>
+
+    <!-- Audit Logs -->
+    <rect x="892" y="100" width="108" height="46" rx="6" fill="#1a1a2e"/>
+    <rect x="892" y="100" width="108" height="46" rx="6" fill="rgba(8,51,68,0.5)" stroke="#22d3ee" stroke-width="1.2"/>
+    <text x="946" y="121" fill="#e2e8f0" font-size="10" font-weight="600" text-anchor="middle">🔐 Audit Log</text>
+    <text x="946" y="137" fill="#94a3b8" font-size="8" text-anchor="middle">HMAC Chain</text>
+  </g>
+
+  <!-- Frontend row 2: Notifications + User Management centered -->
+  <g filter="url(#shadow)">
+    <rect x="408" y="164" width="108" height="46" rx="6" fill="#1a1a2e"/>
+    <rect x="408" y="164" width="108" height="46" rx="6" fill="rgba(8,51,68,0.5)" stroke="#22d3ee" stroke-width="1.2"/>
+    <text x="462" y="185" fill="#e2e8f0" font-size="10" font-weight="600" text-anchor="middle">🔔 Notifications</text>
+    <text x="462" y="201" fill="#94a3b8" font-size="8" text-anchor="middle">Real-time</text>
+
+    <rect x="529" y="164" width="108" height="46" rx="6" fill="#1a1a2e"/>
+    <rect x="529" y="164" width="108" height="46" rx="6" fill="rgba(8,51,68,0.5)" stroke="#22d3ee" stroke-width="1.2"/>
+    <text x="583" y="185" fill="#e2e8f0" font-size="10" font-weight="600" text-anchor="middle">👥 Users</text>
+    <text x="583" y="201" fill="#94a3b8" font-size="8" text-anchor="middle">RBAC</text>
+  </g>
+
+  <!-- Tech stack footer in frontend region -->
+  <text x="530" y="248" fill="#475569" font-size="8" text-anchor="middle">Element Plus · Pinia · Vite · Axios · Vue Router · Role-based Guard</text>
+
+  <!-- ===== LAYER 2: BACKEND ===== -->
+  <rect x="30" y="270" width="1040" height="250" rx="10" fill="none" stroke="#34d399" stroke-width="1" opacity="0.4"/>
+  <rect x="40" y="263" width="230" height="14" fill="#1a1a2e"/>
+  <text x="45" y="274" fill="#34d399" font-size="9" font-weight="600">⚙️ Backend — FastAPI + Uvicorn (port 8000)</text>
+
+  <!-- Backend Internal Flow — 3 sub-layers -->
+
+  <!-- Sub-layer: API Routers -->
+  <rect x="45" y="290" width="1010" height="60" rx="6" fill="none" stroke="#475569" stroke-width="0.5" stroke-dasharray="4,3"/>
+  <text x="55" y="305" fill="#64748b" font-size="8" font-weight="500">API Routers (14 endpoints)</text>
+
+  <!-- API pills -->
+  <rect x="60" y="315" width="62" height="22" rx="4" fill="#1a1a2e" stroke="#475569" stroke-width="0.8"/>
+  <text x="91" y="329" fill="#94a3b8" font-size="7.5" text-anchor="middle">/api/auth</text>
+  <rect x="128" y="315" width="52" height="22" rx="4" fill="#1a1a2e" stroke="#475569" stroke-width="0.8"/>
+  <text x="154" y="329" fill="#94a3b8" font-size="7.5" text-anchor="middle">/api/ae</text>
+  <rect x="186" y="315" width="56" height="22" rx="4" fill="#1a1a2e" stroke="#475569" stroke-width="0.8"/>
+  <text x="214" y="329" fill="#94a3b8" font-size="7.5" text-anchor="middle">/api/sae</text>
+  <rect x="248" y="315" width="80" height="22" rx="4" fill="#1a1a2e" stroke="#475569" stroke-width="0.8"/>
+  <text x="288" y="329" fill="#94a3b8" font-size="7.5" text-anchor="middle">/api/deviations</text>
+  <rect x="334" y="315" width="72" height="22" rx="4" fill="#1a1a2e" stroke="#475569" stroke-width="0.8"/>
+  <text x="370" y="329" fill="#94a3b8" font-size="7.5" text-anchor="middle">/api/signals</text>
+  <rect x="412" y="315" width="88" height="22" rx="4" fill="#1a1a2e" stroke="#475569" stroke-width="0.8"/>
+  <text x="456" y="329" fill="#94a3b8" font-size="7.5" text-anchor="middle">/api/compliance</text>
+  <rect x="506" y="315" width="88" height="22" rx="4" fill="#1a1a2e" stroke="#475569" stroke-width="0.8"/>
+  <text x="550" y="329" fill="#94a3b8" font-size="7.5" text-anchor="middle">/api/knowledge</text>
+  <rect x="600" y="315" width="68" height="22" rx="4" fill="#1a1a2e" stroke="#475569" stroke-width="0.8"/>
+  <text x="634" y="329" fill="#94a3b8" font-size="7.5" text-anchor="middle">/api/audit</text>
+  <rect x="674" y="315" width="72" height="22" rx="4" fill="#1a1a2e" stroke="#475569" stroke-width="0.8"/>
+  <text x="710" y="329" fill="#94a3b8" font-size="7.5" text-anchor="middle">/api/users</text>
+  <rect x="752" y="315" width="96" height="22" rx="4" fill="#1a1a2e" stroke="#475569" stroke-width="0.8"/>
+  <text x="800" y="329" fill="#94a3b8" font-size="7.5" text-anchor="middle">/api/notifications</text>
+  <rect x="854" y="315" width="68" height="22" rx="4" fill="#1a1a2e" stroke="#475569" stroke-width="0.8"/>
+  <text x="888" y="329" fill="#94a3b8" font-size="7.5" text-anchor="middle">/api/admin</text>
+  <rect x="928" y="315" width="68" height="22" rx="4" fill="#1a1a2e" stroke="#475569" stroke-width="0.8"/>
+  <text x="962" y="329" fill="#94a3b8" font-size="7.5" text-anchor="middle">/api/health</text>
+
+  <!-- Arrows: API → Agent -->
+  <path d="M 550 350 L 550 365" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrow-green)" fill="none"/>
+
+  <!-- Sub-layer: Agent Layer -->
+  <rect x="45" y="370" width="1010" height="56" rx="6" fill="none" stroke="#475569" stroke-width="0.5" stroke-dasharray="4,3"/>
+  <text x="55" y="385" fill="#64748b" font-size="8" font-weight="500">Agent Layer (Business Logic)</text>
+
+  <g filter="url(#shadow)">
+    <rect x="60" y="395" width="130" height="24" rx="4" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/>
+    <text x="125" y="411" fill="#d1fae5" font-size="8" font-weight="500" text-anchor="middle">ae_coder</text>
+
+    <rect x="200" y="395" width="130" height="24" rx="4" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/>
+    <text x="265" y="411" fill="#d1fae5" font-size="8" font-weight="500" text-anchor="middle">sae_report</text>
+
+    <rect x="340" y="395" width="130" height="24" rx="4" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/>
+    <text x="405" y="411" fill="#d1fae5" font-size="8" font-weight="500" text-anchor="middle">deviation</text>
+
+    <rect x="480" y="395" width="130" height="24" rx="4" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/>
+    <text x="545" y="411" fill="#d1fae5" font-size="8" font-weight="500" text-anchor="middle">signal_agent</text>
+
+    <rect x="620" y="395" width="130" height="24" rx="4" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/>
+    <text x="685" y="411" fill="#d1fae5" font-size="8" font-weight="500" text-anchor="middle">compliance</text>
+  </g>
+
+  <!-- Arrows: Agent → Service -->
+  <path d="M 550 426 L 550 440" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrow-green)" fill="none"/>
+
+  <!-- Sub-layer: Service Layer -->
+  <rect x="45" y="444" width="1010" height="56" rx="6" fill="none" stroke="#475569" stroke-width="0.5" stroke-dasharray="4,3"/>
+  <text x="55" y="459" fill="#64748b" font-size="8" font-weight="500">Service Layer (Infrastructure)</text>
+
+  <g filter="url(#shadow)">
+    <rect x="60" y="469" width="145" height="24" rx="4" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/>
+    <text x="132" y="485" fill="#d1fae5" font-size="8" font-weight="500" text-anchor="middle">rag_engine</text>
+
+    <rect x="215" y="469" width="145" height="24" rx="4" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/>
+    <text x="287" y="485" fill="#d1fae5" font-size="8" font-weight="500" text-anchor="middle">export_service</text>
+
+    <rect x="370" y="469" width="145" height="24" rx="4" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/>
+    <text x="442" y="485" fill="#d1fae5" font-size="8" font-weight="500" text-anchor="middle">audit_service</text>
+
+    <rect x="525" y="469" width="145" height="24" rx="4" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/>
+    <text x="597" y="485" fill="#d1fae5" font-size="8" font-weight="500" text-anchor="middle">notification</text>
+
+    <rect x="680" y="469" width="145" height="24" rx="4" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1"/>
+    <text x="752" y="485" fill="#d1fae5" font-size="8" font-weight="500" text-anchor="middle">user_service</text>
+  </g>
+
+  <!-- ===== DOWN ARROW: Backend → Data ===== -->
+  <path d="M 550 505 L 550 545" stroke="#a78bfa" stroke-width="2" marker-end="url(#arrow-cyan)" fill="none"/>
+  <rect x="558" y="518" width="135" height="16" rx="3" fill="#1a1a2e"/>
+  <text x="625" y="530" fill="#a78bfa" font-size="7" text-anchor="middle">database.py (MySQL/SQLite)</text>
+
+  <!-- ===== LAYER 3: DATA ===== -->
+  <rect x="30" y="555" width="1040" height="130" rx="10" fill="none" stroke="#a78bfa" stroke-width="1" opacity="0.4"/>
+  <rect x="40" y="548" width="180" height="14" fill="#1a1a2e"/>
+  <text x="45" y="559" fill="#a78bfa" font-size="9" font-weight="600">🗄️ Data Layer</text>
+
+  <!-- MySQL/SQLite -->
+  <g filter="url(#shadow)">
+    <ellipse cx="185" cy="580" rx="90" ry="14" fill="#1a1a2e"/>
+    <ellipse cx="185" cy="580" rx="90" ry="14" fill="rgba(76,29,149,0.3)" stroke="#a78bfa" stroke-width="1.2"/>
+    <rect x="95" y="580" width="180" height="65" rx="3" fill="#1a1a2e"/>
+    <rect x="95" y="580" width="180" height="65" fill="rgba(76,29,149,0.3)"/>
+    <line x1="95" y1="580" x2="95" y2="645" stroke="#a78bfa" stroke-width="1.2"/>
+    <line x1="275" y1="580" x2="275" y2="645" stroke="#a78bfa" stroke-width="1.2"/>
+    <ellipse cx="185" cy="645" rx="90" ry="14" fill="rgba(76,29,149,0.3)" stroke="#a78bfa" stroke-width="1.2"/>
+    <text x="185" y="616" fill="#e2e8f0" font-size="11" font-weight="600" text-anchor="middle">MySQL / SQLite</text>
+    <text x="185" y="633" fill="#94a3b8" font-size="8" text-anchor="middle">9 tables · auto-switch</text>
+  </g>
+
+  <!-- ChromaDB -->
+  <g filter="url(#shadow)">
+    <ellipse cx="480" cy="580" rx="90" ry="14" fill="#1a1a2e"/>
+    <ellipse cx="480" cy="580" rx="90" ry="14" fill="rgba(76,29,149,0.3)" stroke="#a78bfa" stroke-width="1.2"/>
+    <rect x="390" y="580" width="180" height="65" rx="3" fill="#1a1a2e"/>
+    <rect x="390" y="580" width="180" height="65" fill="rgba(76,29,149,0.3)"/>
+    <line x1="390" y1="580" x2="390" y2="645" stroke="#a78bfa" stroke-width="1.2"/>
+    <line x1="570" y1="580" x2="570" y2="645" stroke="#a78bfa" stroke-width="1.2"/>
+    <ellipse cx="480" cy="645" rx="90" ry="14" fill="rgba(76,29,149,0.3)" stroke="#a78bfa" stroke-width="1.2"/>
+    <text x="480" y="616" fill="#e2e8f0" font-size="11" font-weight="600" text-anchor="middle">ChromaDB</text>
+    <text x="480" y="633" fill="#94a3b8" font-size="8" text-anchor="middle">Vector DB · RAG</text>
+  </g>
+
+  <!-- Ollama LLM -->
+  <g filter="url(#shadow)">
+    <ellipse cx="775" cy="580" rx="90" ry="14" fill="#1a1a2e"/>
+    <ellipse cx="775" cy="580" rx="90" ry="14" fill="rgba(76,29,149,0.2)" stroke="#a78bfa" stroke-width="1.2" stroke-dasharray="4,2"/>
+    <rect x="685" y="580" width="180" height="65" rx="3" fill="#1a1a2e"/>
+    <rect x="685" y="580" width="180" height="65" fill="rgba(76,29,149,0.2)"/>
+    <line x1="685" y1="580" x2="685" y2="645" stroke="#a78bfa" stroke-width="1.2" stroke-dasharray="4,2"/>
+    <line x1="865" y1="580" x2="865" y2="645" stroke="#a78bfa" stroke-width="1.2" stroke-dasharray="4,2"/>
+    <ellipse cx="775" cy="645" rx="90" ry="14" fill="rgba(76,29,149,0.2)" stroke="#a78bfa" stroke-width="1.2" stroke-dasharray="4,2"/>
+    <text x="775" y="616" fill="#64748b" font-size="11" font-weight="600" text-anchor="middle">Ollama LLM</text>
+    <text x="775" y="633" fill="#64748b" font-size="8" text-anchor="middle">Optional</text>
+  </g>
+
+  <!-- ===== CROSS-MODULE TRIGGERS ===== -->
+  <!-- AE → Deviation auto trigger -->
+  <path d="M 220 146 L 220 395 L 340 395" stroke="#fb923c" stroke-width="1.8" stroke-dasharray="6,4" fill="none" marker-end="url(#arrow-orange)"/>
+  <rect x="225" y="260" width="155" height="14" rx="3" fill="#1a1a2e"/>
+  <text x="302" y="271" fill="#fb923c" font-size="7" font-weight="500" text-anchor="middle">auto → deviation check</text>
+
+  <!-- SAE → Notification auto trigger -->
+  <path d="M 341 146 L 341 270 L 462 370 L 462 395" stroke="#fb7185" stroke-width="1.8" stroke-dasharray="6,4" fill="none" marker-end="url(#arrow-rose)"/>
+  <rect x="345" y="222" width="155" height="14" rx="3" fill="#1a1a2e"/>
+  <text x="422" y="234" fill="#fb7185" font-size="7" font-weight="500" text-anchor="middle">auto → notification</text>
+
+  <!-- ===== MAIN DATA FLOW (Frontend ↔ Backend) ===== -->
+  <!-- Frontend → Backend -->
+  <path d="M 900 260 L 900 290" stroke="#22d3ee" stroke-width="2" marker-end="url(#arrow-cyan)" fill="none"/>
+  <rect x="907" y="266" width="60" height="14" rx="3" fill="#1a1a2e"/>
+  <text x="937" y="277" fill="#22d3ee" font-size="7" text-anchor="middle">REST API</text>
+
+  <!-- Backend → Frontend (return) -->
+  <path d="M 940 290 L 940 260" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow-cyan)" fill="none" stroke-dasharray="4,3"/>
+
+  <!-- ===== LEGEND ===== -->
+  <rect x="30" y="700" width="1040" height="95" rx="6" fill="rgba(30,41,59,0.3)" stroke="#334155" stroke-width="0.5"/>
+  <text x="50" y="720" fill="#94a3b8" font-size="9" font-weight="600">LEGEND</text>
+
+  <!-- Legend items row 1 -->
+  <line x1="50" y1="740" x2="90" y2="740" stroke="#22d3ee" stroke-width="2" marker-end="url(#arrow-cyan)"/>
+  <text x="100" y="744" fill="#94a3b8" font-size="8">Data Flow</text>
+
+  <line x1="200" y1="740" x2="240" y2="740" stroke="#fb923c" stroke-width="1.8" stroke-dasharray="6,4" marker-end="url(#arrow-orange)"/>
+  <text x="250" y="744" fill="#94a3b8" font-size="8">Auto Trigger</text>
+
+  <line x1="400" y1="740" x2="440" y2="740" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <text x="450" y="744" fill="#94a3b8" font-size="8">Return / Async</text>
+
+  <rect x="600" y="730" width="40" height="20" rx="3" fill="rgba(76,29,149,0.3)" stroke="#a78bfa" stroke-width="0.8"/>
+  <text x="650" y="744" fill="#94a3b8" font-size="8">Optional</text>
+
+  <!-- Legend items row 2 -->
+  <rect x="50" y="763" width="40" height="14" rx="3" fill="rgba(8,51,68,0.5)" stroke="#22d3ee" stroke-width="0.8"/>
+  <text x="100" y="774" fill="#94a3b8" font-size="8">Frontend</text>
+
+  <rect x="200" y="763" width="40" height="14" rx="3" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="0.8"/>
+  <text x="250" y="774" fill="#94a3b8" font-size="8">Backend</text>
+
+  <rect x="400" y="763" width="40" height="14" rx="3" fill="rgba(76,29,149,0.3)" stroke="#a78bfa" stroke-width="0.8"/>
+  <text x="450" y="774" fill="#94a3b8" font-size="8">Data</text>
+
+  <!-- Footer -->
+  <text x="550" y="812" fill="#334155" font-size="7" text-anchor="middle">Built with Claude Code · AE Sentinel V1.1 · Docker multi-stage build</text>
+</svg>

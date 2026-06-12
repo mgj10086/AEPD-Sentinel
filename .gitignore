@@ -59,6 +59,9 @@ htmlcov/
 *.docx
 *.pdf
 
+# Videos (large media files)
+视频/
+
 # Downloads (large data files)
 data/downloads/*.zip
 data/downloads/*.asc
