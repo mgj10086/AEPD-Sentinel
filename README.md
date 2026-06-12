@@ -13,6 +13,10 @@
 
 **AE Sentinel** is a comprehensive clinical trial safety monitoring system. It automates the entire pharmacovigilance workflow: from adverse event (AE) coding and severity assessment to SAE report generation, protocol deviation detection, safety signal mining, and compliance auditing — all backed by an HMAC-verified audit trail.
 
+<p align="center">
+  <img src="图片/architecture.svg" alt="AE Sentinel System Architecture" width="900">
+</p>
+
 ---
 
 ## ✨ Features
