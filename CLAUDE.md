@@ -3,7 +3,7 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 @规则参见：d:/Users/Administrator/Documents/Obsidian Vault/Claude相关/项目启动宪法.md
-@全局上下文	
+@全局上下文：C:/Users/Administrator/.claude/projects/d--works-AIclass-agent-AEPD-Sentinel/memory/global-context.md
 
 ## Project Overview
 
@@ -59,7 +59,10 @@ python test_e2e.py
 | `api/signals.py` | `/api/signals` | `agents/signal_agent.py` | 信号挖掘（后台线程） |
 | `api/compliance.py` | `/api/compliance` | `agents/compliance.py` | 合规质控报告 |
 | `api/knowledge.py` | `/api/knowledge` | `services/rag_engine.py` | 知识文档管理 |
-| `api/audit.py` | `/api/audit` | `services/audit_service.py` | 审计日志查询 |
+| `api/audit.py` | `/api/audit` | `services/audit_service.py` | 审计日志查询（HMAC 防篡改链） |
+| `api/users.py` | `/api/users` | `services/user_service.py` | 用户管理 CRUD |
+| `api/notifications.py` | `/api/notifications` | `services/notification_service.py` | 通知/告警系统 |
+| `api/admin.py` | `/api/admin` | — | 管理功能（seed 数据、mock-cases） |
 | `api/health.py` | `/api/health` | — | 健康检查 |
 
 ## Backend Patterns
@@ -72,7 +75,13 @@ python test_e2e.py
 
 **AE 编码 → 偏离检测自动联动**：`process_ae()` 写入 ae_results 后，自动调用 `deviation.process_patient_visit()` 检测该患者访视的方案偏离。这是一个跨 agent 的隐式依赖 — 修改 ae_coder 或 deviation 时需注意此耦合。
 
-**文档导出**：`backend/services/export_service.py` 支持 SAE 报告导出为 docx/json/pdf（PDF 当前为 docx 占位，未做真实 PDF 渲染）。
+**审计日志 HMAC 防篡改链**：`audit_logs` 表包含 `hmac`/`prev_hmac`/`prev_log_id` 字段形成哈希链，防止历史日志被篡改。`/api/audit/verify` 端点可验证完整日志链的完整性。
+
+**通知系统自动触发**：方案偏离检测、SAE 判定等关键事件自动调用 `notification_service.create_notification()` 生成通知，目标用户从偏离规则配置或任务分配中获取。
+
+**全局前端状态三态**：`stores/app.js` 管理 `loading`/`error`/`success` 三态，`App.vue` 提供全局遮罩层，`composables/usePageState.js` 提供页面级 loading 封装。
+
+**文档导出**：`backend/services/export_service.py` 支持 SAE 报告导出为 docx/json/pdf（PDF 使用 fpdf2 真实渲染 CIOMS-I 报告，自动检测中文字体）。
 
 **本地依赖**：`lib/` 目录包含 vendored 的 PyJWT (v2.13.0)、PyMySQL (v1.2.0)、python-multipart (v0.0.32)，`run.py` 和 `database.py` 都会将 `lib/` 加入 `sys.path`。不需要 `pip install` 这些包。
 
@@ -83,25 +92,29 @@ python test_e2e.py
 ```
 frontend/src/
 ├── main.js              # 挂载 Vue app，注册 router + Pinia + Element Plus
-├── App.vue              # 根组件 (<router-view/>)
-├── router/index.js      # 路由定义 + beforeEach 守卫
+├── App.vue              # 根组件 (<router-view/> + 全局 loading/error 遮罩)
+├── router/index.js      # 路由定义 + beforeEach 守卫 + meta.roles 角色权限
 ├── api/index.js         # axios 实例 + 拦截器
-├── stores/app.js        # Pinia store (token/user/login/logout)
+├── stores/
+│   └── app.js           # Pinia store (token/user/login/logout + loading/error 三态)
+├── composables/
+│   └── usePageState.js  # 页面级 loading/error 封装
 ├── components/
-│   └── AppLayout.vue    # 主布局 (侧边栏 + 顶栏 + <router-view/>)
-└── views/               # 8 个页面组件 (懒加载)
+│   └── AppLayout.vue    # 主布局 (侧边栏角色过滤菜单 + 顶栏通知铃铛 + <router-view/>)
+└── views/               # 10 个页面组件 (懒加载)
     ├── Login.vue        # 登录页 (独立路由，不使用 AppLayout)
-    ├── Dashboard.vue    # 仪表盘 (ECharts 图表)
+    ├── Dashboard.vue    # 仪表盘 (ECharts 图表，数据来自后端 seed API)
     ├── AeCoding.vue     # AE 编码
     ├── SaeReports.vue   # SAE 报告
     ├── Deviations.vue   # 方案偏离
     ├── Signals.vue      # 信号挖掘
     ├── Compliance.vue   # 合规质控
     ├── Knowledge.vue    # 知识库
-    └── Audit.vue        # 审计日志
+    ├── Audit.vue        # 审计日志
+    └── UserManagement.vue # 用户管理 (admin 专属)
 ```
 
-**路由设计**：`/login` 是独立路由（无布局）；其他页面均为 `AppLayout` 的子路由。`beforeEach` 守卫检查 `ae_token` 是否存在，未登录自动跳转 `/login`。
+**路由设计**：`/login` 是独立路由（无布局）；其他页面均为 `AppLayout` 的子路由。`beforeEach` 守卫检查 `ae_token` 是否存在，未登录自动跳转 `/login`。每个子路由 `meta.roles` 定义可见角色，`AppLayout` 按用户角色动态过滤菜单项。
 
 **API 层**：axios 实例 `baseURL: ''`，开发时 Vite dev server (port 5173) 把 `/api/*` 代理到 `http://localhost:8000`。请求拦截器自动附加 `Bearer token`；响应拦截器统一处理 401/403/500 错误，401 时自动清空 token 并跳转登录页。
 
@@ -114,7 +127,7 @@ frontend/src/
 - **API 响应格式**：统一 `{"code": 200, "message": "success", "data": {...}, "timestamp": "ISO8601"}`
 - **Agent 实现**：当前为规则匹配 + 模拟数据。ae_coder 基于 `MEDDRA_SYNONYMS` 关键词字典匹配 MedDRA 编码；severity/sae 判定基于关键词；signal_agent 模拟 Fisher 检验和 PubMed 检索。config 中已预留 LLM 接入点 (ZHIPU/QWEN API key)
 - **前端**：Vue3 Composition API + Pinia + Element Plus + ECharts。页面组件均为懒加载
-- **Auth**：Mock JWT 认证（HS256），用户定义在 `backend/core/config.py` 的 `MOCK_USERS` 字典中。登录返回 token，前端所有 API 请求通过 axios 拦截器自动附加
+- **Auth**：Mock JWT 认证（HS256），用户数据存储在 `users` 数据库表中（`services/user_service.py` 管理）。登录返回 token，前端所有 API 请求通过 axios 拦截器自动附加。角色支持：`admin` / `pv_specialist` / `cra`
 
 ## Data Flow Examples
 
@@ -126,7 +139,7 @@ frontend/src/
 
 ## Database Tables
 
-`ae_results`, `sae_reports`, `deviation_rules`, `deviations`, `signals`, `knowledge_items`, `audit_logs` — 全部在 `init_db()` 中自动创建，支持 MySQL 和 SQLite 双引擎。默认偏差规则（PD-001 ~ PD-007）在首次初始化时通过 `INSERT IGNORE` / `INSERT OR IGNORE` 幂等插入。
+`ae_results`, `sae_reports`, `deviation_rules`, `deviations`, `signals`, `knowledge_items`, `audit_logs`, `users`, `notifications` — 全部在 `init_db()` 中自动创建，支持 MySQL 和 SQLite 双引擎。默认偏差规则（PD-001 ~ PD-007）在首次初始化时通过 `INSERT IGNORE` / `INSERT OR IGNORE` 幂等插入。
 
 ## Reference Documents
 
@@ -137,9 +150,11 @@ frontend/src/
 ## Docker Architecture
 
 `docker-compose.yml` 包含两个 service：
-- `ae-sentinel` — Python 应用容器（FastAPI + 静态文件），volume 挂载 `data/`, `backend/`, `frontend/`, `lib/`
+- `ae-sentinel` — **多阶段构建**：Stage 1 (node:20) 构建前端静态文件 → Stage 2 (python:3.10 + nginx) 运行 FastAPI 并 serve 静态文件，端口 80
 - `chromadb` — ChromaDB 向量数据库容器（端口 8001），持久化到 `data/chroma/`
 - 注释掉的 `ollama` service 用于本地 LLM 部署（端口 11434）
+
+`Dockerfile` 采用多阶段构建，最终镜像仅包含 Python 运行时 + nginx 二进制，不包含 node 和构建依赖。
 
 ## 质量优先级
 
