@@ -3,7 +3,8 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 @规则参见：d:/Users/Administrator/Documents/Obsidian Vault/Claude相关/项目启动宪法.md
-@全局上下文：C:/Users/Administrator/.claude/projects/d--works-AIclass-agent-AEPD-Sentinel/memory/global-context.md
+
+> Memory 配置：项目初始化时将 `Claude相关/通用Memory内容.md` 复制到 `.claude/projects/<hash>/memory/`，详见 [[template/通用Memory模板.md]]
 
 ## Project Overview
 
