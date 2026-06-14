@@ -1,11 +1,21 @@
 """RAG Engine - ChromaDB向量检索"""
 import os
 
+# 必须在 import chromadb 之前禁用遥探，否则 posthog capture() API 不兼容报错
+os.environ.setdefault("ANONYMIZED_TELEMETRY", "False")
+
 from backend.core.config import CHROMA_DIR, CHROMA_COLLECTION
 
 try:
     import chromadb
     CHROMA_AVAILABLE = True
+    # 禁用 ChromaDB 遥探：直接替换 PostHog.capture 为 no-op
+    # ChromaDB 1.5.x 的 telemetry 与新版 posthog 不兼容，env/settings 均无法阻止报错
+    try:
+        from chromadb.telemetry.posthog import PostHog
+        PostHog.capture = lambda self, event: None
+    except Exception:
+        pass
 except ImportError:
     CHROMA_AVAILABLE = False
 
@@ -18,7 +28,22 @@ def init_chroma():
         print("ChromaDB not available, using fallback search")
         return False
     os.makedirs(CHROMA_DIR, exist_ok=True)
-    client = chromadb.PersistentClient(path=CHROMA_DIR)
+
+    # ChromaDB 1.5.x 遥探与新版 posthog 不兼容，抑制 stderr 噪音
+    import sys, io
+    _stderr = sys.stderr
+    sys.stderr = io.StringIO()
+    try:
+        try:
+            client = chromadb.PersistentClient(
+                path=CHROMA_DIR,
+                settings=chromadb.Settings(anonymized_telemetry=False)
+            )
+        except TypeError:
+            client = chromadb.PersistentClient(path=CHROMA_DIR)
+    finally:
+        sys.stderr = _stderr
+
     try:
         collection = client.get_or_create_collection(
             name=CHROMA_COLLECTION,

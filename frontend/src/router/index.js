@@ -3,13 +3,6 @@ import AppLayout from '../components/AppLayout.vue'
 
 const routes = [
   {
-    path: '/',
-    redirect: () => {
-      const token = localStorage.getItem('ae_token')
-      return token ? '/dashboard' : '/login'
-    }
-  },
-  {
     path: '/login',
     name: 'Login',
     component: () => import('../views/Login.vue'),
@@ -17,6 +10,7 @@ const routes = [
   },
   {
     path: '/',
+    redirect: '/dashboard',
     component: AppLayout,
     children: [
       {

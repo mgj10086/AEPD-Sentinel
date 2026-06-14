@@ -141,9 +141,9 @@ async function loadData() {
     stats.pendingSae = saeRes.data.total || 0
     stats.openDeviation = devRes.data.total || 0
     stats.complianceScore = Math.round(compRes.data.overall_score * 100) || 0
-    health.llm = !!healthRes.data.llm
-    health.vector_db = !!healthRes.data.vector_db
-    health.db = !!healthRes.data.db
+    health.llm = healthRes.data.llm_status !== 'unhealthy'
+    health.vector_db = healthRes.data.vector_db_status === 'healthy'
+    health.db = healthRes.data.mysql_status === 'healthy'
   } catch (e) {
     console.error('加载数据失败', e)
   }

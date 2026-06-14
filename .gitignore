@@ -72,3 +72,5 @@ data/downloads/*.asc
 data/downloads/*.txt
 data/downloads/fears/
 data/downloads/Deleted/
+# 项目内部文档（不公开）
+项目文件/面试逐字稿.md

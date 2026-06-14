@@ -16,22 +16,30 @@ ALLOWED_EXTENSIONS = {".md", ".csv", ".txt", ".pdf", ".json"}
 
 @router.post("/upload")
 async def upload_knowledge(file: UploadFile = File(...), type: str = Form(...), description: str = Form(""), request: Request = None):
-    # 文件类型校验
-    import os
-    ext = os.path.splitext(file.filename or "")[1].lower()
-    if ext not in ALLOWED_EXTENSIONS:
-        raise HTTPException(status_code=400, detail=f"不支持的文件类型: {ext}。支持: {', '.join(ALLOWED_EXTENSIONS)}")
-    # 文件大小校验
-    content = await file.read()
-    if len(content) > MAX_UPLOAD_SIZE:
-        raise HTTPException(status_code=400, detail=f"文件过大（{len(content)/1024/1024:.1f}MB），最大允许10MB")
-    result = process_uploaded_file(content, file.filename, type, description)
-    # 写入审计日志
-    user_id = extract_username_from_token(request.headers.get("Authorization", "")) if request else "anonymous"
-    write_audit_log(user_id, "knowledge", "upload", result["item_id"],
-                    f"上传知识文档: {file.filename} 类型={type}")
-    return {"code": 200, "message": "success", "data": result,
-            "timestamp": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")}
+    try:
+        # 文件类型校验
+        import os
+        ext = os.path.splitext(file.filename or "")[1].lower()
+        if ext not in ALLOWED_EXTENSIONS:
+            raise HTTPException(status_code=400, detail=f"不支持的文件类型: {ext}。支持: {', '.join(ALLOWED_EXTENSIONS)}")
+        # 文件大小校验
+        content = await file.read()
+        if len(content) > MAX_UPLOAD_SIZE:
+            raise HTTPException(status_code=400, detail=f"文件过大（{len(content)/1024/1024:.1f}MB），最大允许10MB")
+        result = process_uploaded_file(content, file.filename, type, description)
+        # 写入审计日志
+        user_id = extract_username_from_token(request.headers.get("Authorization", "")) if request else "anonymous"
+        write_audit_log(user_id, "knowledge", "upload", result["item_id"],
+                        f"上传知识文档: {file.filename} 类型={type}")
+        return {"code": 200, "message": "success", "data": result,
+                "timestamp": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")}
+    except HTTPException:
+        raise
+    except Exception as e:
+        import traceback
+        print(f"[Upload Error] {file.filename if file else '?'}: {e}")
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"上传失败: {str(e)}")
 
 @router.get("/status/{task_id}")
 def get_status(task_id: str):

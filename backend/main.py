@@ -79,12 +79,20 @@ async def startup():
     print("AE Sentinel 启动中...")
     print("=" * 60)
 
-    # Initialize SQLite database
+    # Initialize database
     try:
         init_db()
         print("数据库初始化完成")
     except Exception as e:
         print(f"数据库初始化错误: {e}")
+
+    # Initialize ChromaDB
+    try:
+        from backend.services.rag_engine import init_chroma
+        chroma_ok = init_chroma()
+        print(f"ChromaDB 初始化{'成功' if chroma_ok else '跳过（不可用）'}")
+    except Exception as e:
+        print(f"ChromaDB 初始化错误: {e}")
 
     print("=" * 60)
     print(f"AE Sentinel 已启动 - http://{HOST}:{PORT}")

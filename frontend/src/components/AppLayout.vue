@@ -74,6 +74,10 @@
           <el-tag type="warning" effect="plain">
             {{ store.user?.role || '未知角色' }}
           </el-tag>
+          <el-button type="primary" text @click="showPwdDialog = true">
+            <el-icon><Lock /></el-icon>
+            修改密码
+          </el-button>
           <el-button type="danger" text @click="handleLogout">
             <el-icon><SwitchButton /></el-icon>
             退出
@@ -85,12 +89,31 @@
         <router-view />
       </el-main>
     </el-container>
+
+    <!-- 修改密码对话框 -->
+    <el-dialog v-model="showPwdDialog" title="修改密码" width="440px" :close-on-click-modal="false">
+      <el-form ref="pwdFormRef" :model="pwdForm" :rules="pwdRules" label-width="90px" @submit.prevent="handleChangePwd">
+        <el-form-item label="旧密码" prop="old_password">
+          <el-input v-model="pwdForm.old_password" type="password" show-password placeholder="请输入旧密码" />
+        </el-form-item>
+        <el-form-item label="新密码" prop="new_password">
+          <el-input v-model="pwdForm.new_password" type="password" show-password placeholder="至少6位" />
+        </el-form-item>
+        <el-form-item label="确认新密码" prop="confirm_password">
+          <el-input v-model="pwdForm.confirm_password" type="password" show-password placeholder="再次输入新密码" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="showPwdDialog = false">取消</el-button>
+        <el-button type="primary" :loading="pwdLoading" @click="handleChangePwd">确认修改</el-button>
+      </template>
+    </el-dialog>
   </el-container>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
-import { Bell } from '@element-plus/icons-vue'
+import { ref, reactive, computed, onMounted, onBeforeUnmount } from 'vue'
+import { Bell, Lock } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { useRoute, useRouter } from 'vue-router'
 import { useAppStore } from '../stores/app'
@@ -118,7 +141,7 @@ const roleIconMap = {
   users: User
 }
 
-const allChildRoutes = router.options.routes.find(r => r.path === '/')?.children || []
+const allChildRoutes = router.options.routes.find(r => r.path === '/' && r.children)?.children || []
 
 const visibleRoutes = computed(() => {
   const userRole = store.user?.role
@@ -195,6 +218,58 @@ function handleNotifClick(n) {
     router.push('/signal')
   }
   showNotifPanel.value = false
+}
+
+// ---- 修改密码 ----
+const showPwdDialog = ref(false)
+const pwdLoading = ref(false)
+const pwdFormRef = ref(null)
+const pwdForm = reactive({
+  old_password: '',
+  new_password: '',
+  confirm_password: ''
+})
+
+const validateConfirmPwd = (rule, value, callback) => {
+  if (value !== pwdForm.new_password) {
+    callback(new Error('两次输入的密码不一致'))
+  } else {
+    callback()
+  }
+}
+
+const pwdRules = {
+  old_password: [{ required: true, message: '请输入旧密码', trigger: 'blur' }],
+  new_password: [
+    { required: true, message: '请输入新密码', trigger: 'blur' },
+    { min: 6, message: '密码长度不能少于6位', trigger: 'blur' }
+  ],
+  confirm_password: [
+    { required: true, message: '请确认新密码', trigger: 'blur' },
+    { validator: validateConfirmPwd, trigger: 'blur' }
+  ]
+}
+
+async function handleChangePwd() {
+  const valid = await pwdFormRef.value.validate().catch(() => false)
+  if (!valid) return
+
+  pwdLoading.value = true
+  try {
+    await api.post('/api/auth/change-password', {
+      old_password: pwdForm.old_password,
+      new_password: pwdForm.new_password
+    })
+    ElMessage.success('密码修改成功，下次登录时请使用新密码')
+    showPwdDialog.value = false
+    pwdForm.old_password = ''
+    pwdForm.new_password = ''
+    pwdForm.confirm_password = ''
+  } catch (e) {
+    ElMessage.error(e.response?.data?.detail || e.response?.data?.message || '修改失败')
+  } finally {
+    pwdLoading.value = false
+  }
 }
 
 function handleLogout() {

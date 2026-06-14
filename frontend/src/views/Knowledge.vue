@@ -160,9 +160,7 @@ async function uploadFile() {
     formData.append('file', file.value)
     if (uploadForm.type) formData.append('type', uploadForm.type)
     if (uploadForm.description) formData.append('description', uploadForm.description)
-    const res = await api.post('/api/admin/knowledge/upload', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
-    })
+    const res = await api.post('/api/admin/knowledge/upload', formData)
     ElMessage.success(`上传成功，ID: ${res.data.item_id}`)
     file.value = null
     uploadForm.type = ''

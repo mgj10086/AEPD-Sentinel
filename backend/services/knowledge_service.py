@@ -33,24 +33,39 @@ def process_uploaded_file(file_content: bytes, file_name: str, doc_type: str, de
     except: content = f"[{file_name}] 解析失败"
     
     with get_db() as conn:
-        execute_insert(conn, "INSERT INTO knowledge_items (item_id, type, file_name, description, status, progress, message, created_at, updated_at) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)",
-            (item_id, doc_type, file_name, description, "processing", 0.5, "已上传，待向量化", item["created_at"], ""))
+        execute_insert(conn, "INSERT INTO knowledge_items (item_id, type, file_name, description, status, progress, message, created_at) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
+            (item_id, doc_type, file_name, description, "processing", 0.5, "已上传，待向量化", item["created_at"]))
     
     # Add to ChromaDB
     try:
-        add_documents([content], [{"item_id": item_id, "type": doc_type}], [item_id])
-        with get_db() as conn:
-            execute_insert(conn, "UPDATE knowledge_items SET status = 'completed', progress = %s, message = %s WHERE item_id = %s",
-                (1.0, "已完成向量化", item_id))
-        item["status"] = "completed"
+        success = add_documents([content], [{"item_id": item_id, "type": doc_type}], [item_id])
+        if success:
+            with get_db() as conn:
+                execute_insert(conn, "UPDATE knowledge_items SET status = 'completed', progress = %s, message = %s WHERE item_id = %s",
+                    (1.0, "已完成向量化", item_id))
+            item["status"] = "completed"
+            item["message"] = "向量化成功"
+            item["progress"] = 1.0
+        else:
+            # ChromaDB 不可用时，标记为完成但注明未向量化
+            with get_db() as conn:
+                execute_insert(conn, "UPDATE knowledge_items SET status = 'completed', progress = %s, message = %s WHERE item_id = %s",
+                    (1.0, "已保存（向量数据库不可用，跳过向量化）", item_id))
+            item["status"] = "completed"
+            item["message"] = "已保存（未向量化）"
+            item["progress"] = 1.0
     except Exception as e:
         item["status"] = "failed"
-        with get_db() as conn:
-            execute_insert(conn, "UPDATE knowledge_items SET status = %s, message = %s WHERE item_id = %s",
-                ("failed", f"向量化失败: {str(e)}", item_id))
-    
-    item["message"] = "向量化成功" if item["status"] == "completed" else "向量化失败"
-    item["progress"] = 1.0 if item["status"] == "completed" else 0.5
+        item["message"] = f"向量化失败: {str(e)}"
+        try:
+            with get_db() as conn:
+                execute_insert(conn, "UPDATE knowledge_items SET status = %s, message = %s WHERE item_id = %s",
+                    ("failed", item["message"], item_id))
+        except Exception:
+            pass  # 数据库更新失败不影响返回
+
+    if "progress" not in item:
+        item["progress"] = 0.5
     return item
 
 def get_knowledge_list(doc_type: str = "", page: int = 1, page_size: int = 20) -> dict:

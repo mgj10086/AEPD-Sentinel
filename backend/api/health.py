@@ -3,7 +3,7 @@ from fastapi import APIRouter
 import time
 
 from backend.core.database import get_connection, _engine
-from backend.services.rag_engine import CHROMA_AVAILABLE, client as chroma_client
+import backend.services.rag_engine as rag_engine
 
 START_TIME = time.time()
 
@@ -18,7 +18,6 @@ def _check_db() -> bool:
             with conn.cursor() as cur:
                 cur.execute("SELECT 1")
         else:
-            # SQLite: 直接使用 execute
             conn.execute("SELECT 1")
         conn.close()
         return True
@@ -27,13 +26,12 @@ def _check_db() -> bool:
 
 
 def _check_chroma() -> bool:
-    """真实 ChromaDB 连接检查"""
-    if not CHROMA_AVAILABLE:
+    """真实 ChromaDB 连接检查（通过模块引用避免 import 绑定过时）"""
+    if not rag_engine.CHROMA_AVAILABLE:
         return False
     try:
-        if chroma_client is not None:
-            # 尝试获取 collection 列表来验证连接
-            chroma_client.list_collections()
+        if rag_engine.client is not None:
+            rag_engine.client.list_collections()
             return True
         return False
     except Exception:

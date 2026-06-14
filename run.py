@@ -2,6 +2,10 @@
 import sys
 import os
 
+# Disable ChromaDB telemetry to avoid posthog API compatibility issues
+os.environ["ANONYMIZED_TELEMETRY"] = "False"
+os.environ["CHROMA_TELEMETRY"] = "False"
+
 # Add project root to sys.path so 'backend.xxx' imports work
 project_root = os.path.dirname(os.path.abspath(__file__))
 if project_root not in sys.path:
