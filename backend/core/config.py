@@ -55,9 +55,22 @@ EXPECTED_AES = [
 # MOCK_USERS 字典已移除，保留 _hash 函数兼容性引用
 
 # JWT
-SECRET_KEY = os.getenv("JWT_SECRET_KEY", "ae-sentinel-dev-key-change-in-production")
+SECRET_KEY = os.getenv("JWT_SECRET_KEY", "")
 ALGORITHM = "HS256"
 TOKEN_EXPIRE = int(os.getenv("JWT_EXPIRE_SECONDS", 3600))
 
 # Audit log HMAC key (for tamper-evident hash chain)
-AUDIT_HMAC_KEY = os.getenv("AUDIT_HMAC_KEY", "ae-sentinel-audit-dev-key")
+AUDIT_HMAC_KEY = os.getenv("AUDIT_HMAC_KEY", "")
+
+# SECURITY: Refuse to start with default/empty secrets
+# Set JWT_SECRET_KEY and AUDIT_HMAC_KEY in .env or environment
+if not SECRET_KEY:
+    raise RuntimeError(
+        "JWT_SECRET_KEY 未设置！请在 .env 文件中设置一个随机密钥。\n"
+        "生成命令: python -c \"import secrets; print(secrets.token_hex(32))\""
+    )
+if not AUDIT_HMAC_KEY:
+    raise RuntimeError(
+        "AUDIT_HMAC_KEY 未设置！请在 .env 文件中设置一个随机密钥。\n"
+        "生成命令: python -c \"import secrets; print(secrets.token_hex(32))\""
+    )

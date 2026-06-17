@@ -16,6 +16,13 @@ lib_dir = os.path.join(project_root, "lib")
 if os.path.exists(lib_dir) and lib_dir not in sys.path:
     sys.path.insert(0, lib_dir)
 
+# Load .env file for local development (keys, DB config, etc.)
+from dotenv import load_dotenv
+dotenv_path = os.path.join(project_root, ".env")
+if os.path.exists(dotenv_path):
+    load_dotenv(dotenv_path)
+    print(f"[run.py] 已加载环境变量: {dotenv_path}")
+
 import uvicorn
 from backend.core.config import HOST, PORT, DEBUG
 from backend.main import app

@@ -1,4 +1,5 @@
 """AE Sentinel - Main FastAPI Application"""
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -26,10 +27,46 @@ from backend.api.admin import router as admin_router
 
 START_TIME = time.time()
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Application lifespan: startup → yield → shutdown."""
+    # ── Startup ──
+    print("=" * 60)
+    print("AE Sentinel 启动中...")
+    print("=" * 60)
+
+    # Initialize database
+    try:
+        init_db()
+        print("数据库初始化完成")
+    except Exception as e:
+        print(f"数据库初始化错误: {e}")
+
+    # Initialize ChromaDB
+    try:
+        from backend.services.rag_engine import init_chroma
+        chroma_ok = init_chroma()
+        print(f"ChromaDB 初始化{'成功' if chroma_ok else '跳过（不可用）'}")
+    except Exception as e:
+        print(f"ChromaDB 初始化错误: {e}")
+
+    print("=" * 60)
+    print(f"AE Sentinel 已启动 - http://{HOST}:{PORT}")
+    print(f"API 文档: http://{HOST}:{PORT}/docs")
+    print("=" * 60)
+
+    yield
+
+    # ── Shutdown (currently no cleanup needed) ──
+    pass
+
+
 app = FastAPI(
     title="AE Sentinel API",
     description="药物临床试验不良事件智能监测平台 - API",
-    version="1.0.0"
+    version="1.0.0",
+    lifespan=lifespan,
 )
 
 # CORS — 生产环境通过 CORS_ORIGINS 环境变量配置允许的域名
@@ -72,29 +109,3 @@ def serve_frontend():
     if os.path.exists(index_path):
         return FileResponse(index_path)
     return {"message": "AE Sentinel API is running. Visit /docs for API documentation."}
-
-@app.on_event("startup")
-async def startup():
-    print("=" * 60)
-    print("AE Sentinel 启动中...")
-    print("=" * 60)
-
-    # Initialize database
-    try:
-        init_db()
-        print("数据库初始化完成")
-    except Exception as e:
-        print(f"数据库初始化错误: {e}")
-
-    # Initialize ChromaDB
-    try:
-        from backend.services.rag_engine import init_chroma
-        chroma_ok = init_chroma()
-        print(f"ChromaDB 初始化{'成功' if chroma_ok else '跳过（不可用）'}")
-    except Exception as e:
-        print(f"ChromaDB 初始化错误: {e}")
-
-    print("=" * 60)
-    print(f"AE Sentinel 已启动 - http://{HOST}:{PORT}")
-    print(f"API 文档: http://{HOST}:{PORT}/docs")
-    print("=" * 60)
