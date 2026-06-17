@@ -9,7 +9,7 @@ uvicorn[standard]>=0.22.0
 # MySQL via pymysql (bundled in lib/)
 
 # Vector Database
-chromadb>=0.4.0
+chromadb>=0.5.0,<0.7.0
 
 # Authentication
 PyJWT>=2.8.0

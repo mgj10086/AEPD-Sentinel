@@ -25,7 +25,7 @@ services:
 
   # ========== 向量数据库 ==========
   chromadb:
-    image: chromadb/chroma:latest
+    image: chromadb/chroma:0.6.3
     container_name: ae-sentinel-chroma
     ports:
       - "8001:8000"

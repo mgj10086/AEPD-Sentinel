@@ -11,7 +11,7 @@ COPY frontend/ .
 RUN npm run build
 
 # ===== 阶段 2: Python 运行时 + nginx =====
-FROM python:3.10-slim
+FROM python:3.11-slim
 
 WORKDIR /app
 
