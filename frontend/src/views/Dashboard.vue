@@ -5,7 +5,7 @@
         <el-card shadow="hover" class="stat-card">
           <div class="stat-header">
             <span>AE总数</span>
-            <el-icon :size="24" color="#409EFF"><Document /></el-icon>
+            <el-icon :size="24" color="var(--ae-stat-primary)"><Document /></el-icon>
           </div>
           <div class="stat-value" :class="'primary'">{{ stats.totalAe }}</div>
           <div class="stat-label">累计不良事件编码</div>
@@ -15,7 +15,7 @@
         <el-card shadow="hover" class="stat-card">
           <div class="stat-header">
             <span>SAE待报告</span>
-            <el-icon :size="24" color="#e6a23c"><WarningFilled /></el-icon>
+            <el-icon :size="24" color="var(--ae-stat-warning)"><WarningFilled /></el-icon>
           </div>
           <div class="stat-value" :class="'warning'">{{ stats.pendingSae }}</div>
           <div class="stat-label">严重不良事件等待处理</div>
@@ -25,7 +25,7 @@
         <el-card shadow="hover" class="stat-card">
           <div class="stat-header">
             <span>开放偏离</span>
-            <el-icon :size="24" color="#f56c6c"><CloseCircle /></el-icon>
+            <el-icon :size="24" color="var(--ae-stat-danger)"><CloseCircle /></el-icon>
           </div>
           <div class="stat-value" :class="'danger'">{{ stats.openDeviation }}</div>
           <div class="stat-label">方案偏离未解决</div>
@@ -35,7 +35,7 @@
         <el-card shadow="hover" class="stat-card">
           <div class="stat-header">
             <span>合规评分</span>
-            <el-icon :size="24" color="#67c23a"><CircleCheckFilled /></el-icon>
+            <el-icon :size="24" color="var(--ae-stat-success)"><CircleCheckFilled /></el-icon>
           </div>
           <div class="stat-value" :class="getComplianceClass">{{ stats.complianceScore }}<span style="font-size: 16px">%</span></div>
           <div class="stat-label">整体合规度</div>
@@ -186,21 +186,21 @@ async function importMockCases() {
     align-items: center;
     margin-bottom: 12px;
     font-size: 14px;
-    color: #909399;
+    color: var(--ae-text-muted);
   }
   .stat-value {
     font-size: 36px;
     font-weight: bold;
     line-height: 1;
     margin-bottom: 8px;
-    &.primary { color: #2B579A; }
-    &.success { color: #67c23a; }
-    &.warning { color: #e6a23c; }
-    &.danger { color: #f56c6c; }
+    &.primary { color: var(--ae-stat-primary); }
+    &.success { color: var(--ae-stat-success); }
+    &.warning { color: var(--ae-stat-warning); }
+    &.danger { color: var(--ae-stat-danger); }
   }
   .stat-label {
     font-size: 12px;
-    color: #c0c4cc;
+    color: var(--ae-text-muted);
     margin-top: 8px;
   }
 }

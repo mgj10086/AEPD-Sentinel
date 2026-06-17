@@ -2,7 +2,7 @@
   <div class="login-page">
     <div class="login-card">
       <div class="login-header">
-        <el-icon :size="40" color="#409EFF"><Monitor /></el-icon>
+        <el-icon :size="40" color="var(--ae-logo-color)"><Monitor /></el-icon>
         <h1>AE Sentinel</h1>
         <p>不良事件智能监测平台</p>
       </div>
@@ -102,12 +102,12 @@ async function handleLogin() {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #1a1a2e 0%, #2B579A 100%);
+  background: linear-gradient(135deg, var(--ae-login-gradient-start) 0%, var(--ae-login-gradient-end) 100%);
 }
 .login-card {
   width: 420px;
   padding: 40px;
-  background: #fff;
+  background: var(--ae-login-card-bg);
   border-radius: 12px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
@@ -118,10 +118,10 @@ async function handleLogin() {
 .login-header h1 {
   margin: 12px 0 4px;
   font-size: 24px;
-  color: #2B579A;
+  color: var(--ae-login-heading);
 }
 .login-header p {
-  color: #909399;
+  color: var(--ae-login-subtitle);
   font-size: 14px;
 }
 .login-btn {

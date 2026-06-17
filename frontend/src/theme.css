@@ -1,0 +1,136 @@
+/* ===================================================================
+   AE Sentinel — Warm Color Theme
+   ===================================================================
+   覆盖 Element Plus CSS 变量 + 项目语义化颜色变量。
+   在 main.js 中于 element-plus/dist/index.css 之后导入。
+   =================================================================== */
+
+:root {
+  /* ===== 项目语义化颜色变量 ===== */
+  --ae-sidebar-bg: #2D2420;
+  --ae-sidebar-border: #3D3430;
+  --ae-sidebar-text: #B0A49E;
+  --ae-sidebar-text-active: #C87A68;
+  --ae-logo-color: #C87A68;
+  --ae-logo-text: #E8E0DA;
+  --ae-menu-bg: #2D2420;
+  --ae-menu-text: #B0A49E;
+  --ae-menu-active-text: #C87A68;
+
+  --ae-header-bg: #FDFAF8;
+  --ae-header-border: #E0D8D0;
+  --ae-header-title: #C87A68;
+
+  --ae-content-bg: #F5EFEB;
+
+  --ae-text-primary: #5C5754;
+  --ae-text-muted: #B0A49E;
+  --ae-text-score-label: #4A4542;
+
+  --ae-loading-overlay: rgba(253, 250, 248, 0.75);
+  --ae-loading-spinner: #C87A68;
+
+  --ae-login-gradient-start: #2D2420;
+  --ae-login-gradient-end: #C87A68;
+  --ae-login-card-bg: #FDFAF8;
+  --ae-login-heading: #C87A68;
+  --ae-login-subtitle: #8B7D74;
+
+  --ae-chart-danger: #C45C5C;
+  --ae-chart-danger-area: rgba(196, 92, 92, 0.1);
+  --ae-chart-warning: #DF9A55;
+  --ae-chart-muted: #8B7D74;
+  --ae-chart-primary: #C87A68;
+  --ae-chart-primary-area: rgba(200, 122, 104, 0.1);
+
+  --ae-stat-primary: #C87A68;
+  --ae-stat-success: #8FA88A;
+  --ae-stat-warning: #DF9A55;
+  --ae-stat-danger: #C45C5C;
+
+  --ae-tamper-warning: #C45C5C;
+  --ae-placeholder-text: #B0A49E;
+  --ae-hover-bg: #F5EFEB;
+  --ae-unread-bg: #F5E3DE;
+  --ae-border-light: #F2ECE4;
+  --ae-notif-msg-text: #5C5754;
+  --ae-notif-time-text: #B0A49E;
+
+  /* ===== Element Plus 主要色 ===== */
+  --el-color-primary: #C87A68;
+  --el-color-primary-light-3: #D49588;
+  --el-color-primary-light-5: #DFA89D;
+  --el-color-primary-light-7: #EAC1B8;
+  --el-color-primary-light-8: #F0D2CB;
+  --el-color-primary-light-9: #F5E3DE;
+  --el-color-primary-dark-2: #B06A5A;
+
+  /* ===== Element Plus 语义色 ===== */
+  --el-color-success: #8FA88A;
+  --el-color-success-light-3: #A5B9A1;
+  --el-color-success-light-5: #BBCAB8;
+  --el-color-success-light-7: #D1DBCE;
+  --el-color-success-light-8: #DEE6DC;
+  --el-color-success-light-9: #ECF1EA;
+
+  --el-color-warning: #DF9A55;
+  --el-color-warning-light-3: #E5AE77;
+  --el-color-warning-light-5: #EBBE92;
+  --el-color-warning-light-7: #F2D1B1;
+  --el-color-warning-light-8: #F5DFC7;
+  --el-color-warning-light-9: #FAEDDE;
+
+  --el-color-danger: #C45C5C;
+  --el-color-danger-light-3: #D07C7C;
+  --el-color-danger-light-5: #DC9C9C;
+  --el-color-danger-light-7: #E9BFBF;
+  --el-color-danger-light-8: #EFD2D2;
+  --el-color-danger-light-9: #F5E5E5;
+
+  --el-color-info: #8B7D74;
+  --el-color-info-light-3: #A29890;
+  --el-color-info-light-5: #B9B0A8;
+  --el-color-info-light-7: #D0C9C2;
+  --el-color-info-light-8: #DDD7D2;
+  --el-color-info-light-9: #EBE6E3;
+
+  /* ===== 文字色 ===== */
+  --el-text-color-primary: #5C5754;
+  --el-text-color-regular: #5C5754;
+  --el-text-color-secondary: #B0A49E;
+  --el-text-color-placeholder: #C4BDB6;
+  --el-text-color-disabled: #D6CFCA;
+
+  /* ===== 背景色 ===== */
+  --el-bg-color: #FDFAF8;
+  --el-bg-color-overlay: #FDFAF8;
+  --el-bg-color-page: #F5EFEB;
+
+  /* ===== 填充色 ===== */
+  --el-fill-color: #F2EBE7;
+  --el-fill-color-light: #F5EFEB;
+  --el-fill-color-lighter: #F8F4EF;
+  --el-fill-color-extra-light: #FCF9F7;
+  --el-fill-color-dark: #EBE4DF;
+  --el-fill-color-darker: #E5DDD7;
+  --el-fill-color-blank: #FDFAF8;
+
+  /* ===== 边框色 ===== */
+  --el-border-color-base: #E0D8D0;
+  --el-border-color: #E0D8D0;
+  --el-border-color-light: #EDE6DE;
+  --el-border-color-lighter: #F2ECE4;
+  --el-border-color-extra-light: #F8F4EF;
+  --el-border-color-dark: #CBC1B9;
+  --el-border-color-darker: #C0B5AD;
+
+  /* ===== 遮罩层与阴影 ===== */
+  --el-mask-color: rgba(45, 36, 32, 0.5);
+  --el-overlay-color-lighter: rgba(45, 36, 32, 0.1);
+  --el-overlay-color-light: rgba(45, 36, 32, 0.25);
+
+  /* ===== 禁用态 ===== */
+  --el-disabled-bg-color: #F2ECE4;
+  --el-disabled-text-color: #C4BDB6;
+  --el-disabled-border-color: #EDE6DE;
+}

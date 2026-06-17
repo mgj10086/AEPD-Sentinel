@@ -213,15 +213,15 @@ async function submitResolve() {
   text-align: center;
   .dev-stat-header {
     font-size: 14px;
-    color: #909399;
+    color: var(--ae-text-muted);
     margin-bottom: 8px;
   }
   .dev-stat-value {
     font-size: 32px;
     font-weight: bold;
-    &.danger { color: #f56c6c; }
-    &.warning { color: #e6a23c; }
-    &.success { color: #67c23a; }
+    &.danger { color: var(--ae-stat-danger); }
+    &.warning { color: var(--ae-stat-warning); }
+    &.success { color: var(--ae-stat-success); }
   }
 }
 .card-header {

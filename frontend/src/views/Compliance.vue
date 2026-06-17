@@ -97,10 +97,10 @@ const data = reactive({
 })
 
 const scoreColor = computed(() => {
-  if (!data.overall_score) return '#f56c6c'
-  if (data.overall_score >= 0.9) return '#67c23a'
-  if (data.overall_score >= 0.7) return '#e6a23c'
-  return '#f56c6c'
+  if (!data.overall_score) return 'var(--ae-stat-danger)'
+  if (data.overall_score >= 0.9) return 'var(--ae-stat-success)'
+  if (data.overall_score >= 0.7) return 'var(--ae-stat-warning)'
+  return 'var(--ae-stat-danger)'
 })
 
 onMounted(() => {
@@ -147,7 +147,7 @@ function getDaysType(days) {
     font-size: 16px;
     font-weight: 600;
     margin-bottom: 12px;
-    color: #303133;
+    color: var(--ae-text-score-label);
   }
 }
 .score-number {

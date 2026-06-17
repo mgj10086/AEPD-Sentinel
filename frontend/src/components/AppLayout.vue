@@ -7,9 +7,9 @@
       </div>
       <el-menu
         :default-active="activeMenu"
-        background-color="#1a1a2e"
-        text-color="#bfcbd9"
-        active-text-color="#409EFF"
+        background-color="var(--ae-menu-bg)"
+        text-color="var(--ae-menu-text)"
+        active-text-color="var(--ae-menu-active-text)"
         router
       >
         <el-menu-item v-for="item in visibleRoutes" :key="item.path" :index="'/' + item.path">
@@ -292,7 +292,7 @@ onBeforeUnmount(() => {
   height: 100vh;
 }
 .app-sidebar {
-  background-color: #1a1a2e;
+  background-color: var(--ae-sidebar-bg);
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -302,20 +302,20 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  color: #409EFF;
-  border-bottom: 1px solid #2d2d4a;
+  color: var(--ae-logo-color);
+  border-bottom: 1px solid var(--ae-sidebar-border);
 }
 .logo-text {
   font-size: 18px;
   font-weight: bold;
-  color: #e0e6ed;
+  color: var(--ae-logo-text);
 }
 .app-sidebar .el-menu {
   border-right: none;
 }
 .app-header {
-  background: #fff;
-  border-bottom: 1px solid #e4e7ed;
+  background: var(--ae-header-bg);
+  border-bottom: 1px solid var(--ae-header-border);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -329,7 +329,7 @@ onBeforeUnmount(() => {
 .page-title {
   font-size: 18px;
   font-weight: 600;
-  color: #2B579A;
+  color: var(--ae-header-title);
 }
 .header-right {
   display: flex;
@@ -340,7 +340,7 @@ onBeforeUnmount(() => {
   cursor: default;
 }
 .app-main {
-  background: #f0f2f5;
+  background: var(--ae-content-bg);
   min-height: calc(100vh - 60px);
   padding: 20px;
 }
@@ -357,19 +357,19 @@ onBeforeUnmount(() => {
   justify-content: space-between;
   align-items: center;
   padding: 0 16px 8px;
-  border-bottom: 1px solid #ebeef5;
+  border-bottom: 1px solid var(--ae-header-border);
 }
 .notif-item {
   padding: 10px 16px;
   cursor: pointer;
-  border-bottom: 1px solid #f2f2f2;
+  border-bottom: 1px solid var(--ae-border-light);
   transition: background 0.2s;
 }
 .notif-item:hover {
-  background: #f5f7fa;
+  background: var(--ae-hover-bg);
 }
 .notif-item.unread {
-  background: #ecf5ff;
+  background: var(--ae-unread-bg);
 }
 .notif-title {
   display: flex;
@@ -381,13 +381,13 @@ onBeforeUnmount(() => {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #409EFF;
+  background: var(--ae-sidebar-text-active);
   display: inline-block;
 }
 .notif-msg {
   margin: 2px 0;
   font-size: 13px;
-  color: #606266;
+  color: var(--ae-notif-msg-text);
   line-height: 1.4;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -396,6 +396,6 @@ onBeforeUnmount(() => {
 }
 .notif-time {
   font-size: 12px;
-  color: #c0c4cc;
+  color: var(--ae-notif-time-text);
 }
 </style>

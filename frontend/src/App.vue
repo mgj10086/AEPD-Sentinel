@@ -46,7 +46,7 @@ const store = useAppStore()
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(255, 255, 255, 0.75);
+  background: var(--ae-loading-overlay);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -54,7 +54,7 @@ const store = useAppStore()
 }
 .global-loading-content {
   text-align: center;
-  color: #409EFF;
+  color: var(--ae-loading-spinner);
 }
 .global-loading-content p {
   margin-top: 12px;

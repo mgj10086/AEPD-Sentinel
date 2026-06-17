@@ -52,7 +52,7 @@
         <el-table-column prop="log_id" label="被篡改日志" width="200" />
         <el-table-column label="说明">
           <template #default>
-            <span style="color: #f56c6c">HMAC 不匹配 — 数据已被篡改</span>
+            <span style="color: var(--ae-tamper-warning)">HMAC 不匹配 — 数据已被篡改</span>
           </template>
         </el-table-column>
       </el-table>

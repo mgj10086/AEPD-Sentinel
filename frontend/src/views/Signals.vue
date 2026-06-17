@@ -144,16 +144,16 @@ function initCharts() {
           type: 'line',
           data: [0.5, 0.8, 1.2, 1.0, 1.5, 1.3],
           smooth: true,
-          itemStyle: { color: '#f56c6c' },
-          areaStyle: { color: 'rgba(245, 108, 108, 0.1)' }
+          itemStyle: { color: 'var(--ae-chart-danger)' },
+          areaStyle: { color: 'var(--ae-chart-danger-area)' }
         },
         {
           name: '背景率',
           type: 'line',
           data: [0.3, 0.4, 0.5, 0.4, 0.5, 0.5],
           smooth: true,
-          itemStyle: { color: '#409EFF' },
-          areaStyle: { color: 'rgba(64, 158, 255, 0.1)' }
+          itemStyle: { color: 'var(--ae-chart-primary)' },
+          areaStyle: { color: 'var(--ae-chart-primary-area)' }
         }
       ]
     })
@@ -175,7 +175,7 @@ function initCharts() {
             { value: 28, name: '监测中信号' },
             { value: 42, name: '待确认信号' }
           ],
-          color: ['#f56c6c', '#e6a23c', '#909399']
+          color: ['var(--ae-chart-danger)', 'var(--ae-chart-warning)', 'var(--ae-chart-muted)']
         }
       ]
     })

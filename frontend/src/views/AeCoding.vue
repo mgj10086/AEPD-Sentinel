@@ -165,7 +165,7 @@
                 >
                   生成SAE
                 </el-button>
-                <span v-else style="color: #c0c4cc">-</span>
+                <span v-else style="color: var(--ae-placeholder-text)">-</span>
               </template>
             </el-table-column>
           </el-table>
