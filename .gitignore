@@ -61,10 +61,17 @@ htmlcov/
 
 # Videos (large media files)
 视频/
+*.mp4
+*.mov
+*.avi
 
 # Non-public project files
 推广文稿.md
 项目文件/面试逐字稿.md
+项目文件/git_log*.txt
+
+# Claude internal working directory (temporary artifacts)
+.claude/
 
 # Downloads (large data files)
 data/downloads/*.zip
