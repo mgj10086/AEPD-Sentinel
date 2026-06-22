@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AE Sentinel — 五大智能体流程图</title>
+<style>
+  :root {
+    --blue:    #2B579A;
+    --blue-lt: #D6E4F0;
+    --red:     #C0392B;
+    --red-lt:  #FADBD8;
+    --orange:  #E67E22;
+    --orange-lt:#FDEBD0;
+    --green:   #1E8449;
+    --green-lt:#D5F5E3;
+    --purple:  #7D3C98;
+    --purple-lt:#E8DAEF;
+    --teal:    #117A65;
+    --teal-lt: #D1F2EB;
+    --gray:    #566573;
+    --gray-lt: #EAECEE;
+    --dark:    #1a1a2e;
+    --white:   #FFFFFF;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: 'Microsoft YaHei','PingFang SC',sans-serif;
+    background: #f0f2f5;
+    color: #2c3e50;
+    line-height: 1.6;
+  }
+
+  /* ── 封面 ── */
+  .cover {
+    background: linear-gradient(135deg, #1a1a2e 0%, #2B579A 100%);
+    color: #fff;
+    text-align: center;
+    padding: 80px 40px 60px;
+    page-break-after: always;
+  }
+  .cover h1 { font-size: 42px; font-weight: 700; margin-bottom: 12px; letter-spacing: 2px; }
+  .cover .sub { font-size: 20px; opacity: .85; margin-bottom: 40px; }
+  .cover .badges { display:flex; justify-content:center; gap:16px; flex-wrap:wrap; }
+  .cover .badge {
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.25);
+    border-radius: 24px;
+    padding: 10px 24px;
+    font-size: 15px;
+  }
+
+  /* ── 每个 Agent Section ── */
+  .agent-section {
+    max-width: 1100px;
+    margin: 40px auto;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 4px 20px rgba(0,0,0,.08);
+    overflow: hidden;
+    page-break-inside: avoid;
+  }
+  .agent-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 24px 32px;
+    color: #fff;
+  }
+  .agent-header .agent-num {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; font-weight: 800;
+  }
+  .agent-header .agent-info h2 { font-size: 22px; font-weight: 700; }
+  .agent-header .agent-info .file { font-size: 13px; opacity:.85; font-family: 'Consolas','Courier New',monospace; }
+
+  /* 颜色方案 */
+  .agent1 { --accent: var(--blue);   --accent-lt: var(--blue-lt); }
+  .agent2 { --accent: var(--red);    --accent-lt: var(--red-lt); }
+  .agent3 { --accent: var(--purple); --accent-lt: var(--purple-lt); }
+  .agent4 { --accent: var(--teal);   --accent-lt: var(--teal-lt); }
+  .agent5 { --accent: var(--orange); --accent-lt: var(--orange-lt); }
+
+  .agent1 .agent-header { background: linear-gradient(135deg, #1a3a5c, #2B579A); }
+  .agent2 .agent-header { background: linear-gradient(135deg, #641e16, #C0392B); }
+  .agent3 .agent-header { background: linear-gradient(135deg, #4a235a, #7D3C98); }
+  .agent4 .agent-header { background: linear-gradient(135deg, #0b5345, #117A65); }
+  .agent5 .agent-header { background: linear-gradient(135deg, #7d4a00, #E67E22); }
+
+  /* ── 流程图容器 ── */
+  .flow-body { padding: 28px 32px 32px; }
+
+  /* 入口标签 */
+  .entry-label {
+    display: inline-block;
+    background: var(--gray-lt);
+    color: var(--gray);
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    border: 1px dashed #bdc3c7;
+  }
+
+  /* ── 步骤节点 ── */
+  .step-list { display:flex; flex-direction:column; align-items:center; gap:0; }
+  .step-node {
+    width: 100%;
+    max-width: 900px;
+    background: #fff;
+    border: 2px solid var(--accent);
+    border-radius: 12px;
+    padding: 18px 24px;
+    position: relative;
+    transition: transform .15s, box-shadow .15s;
+  }
+  .step-node:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(0,0,0,.10);
+  }
+  .step-node .step-num {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 32px;
+    font-weight: 700;
+    font-size: 15px;
+    margin-right: 10px;
+    vertical-align: middle;
+  }
+  .step-node .step-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--accent);
+    display: inline;
+    vertical-align: middle;
+  }
+  .step-node .step-code {
+    display: inline-block;
+    background: var(--accent-lt);
+    color: var(--accent);
+    font-size: 12px;
+    font-family: 'Consolas','Courier New',monospace;
+    padding: 3px 10px;
+    border-radius: 12px;
+    margin-left: 8px;
+    vertical-align: middle;
+    font-weight: 600;
+  }
+  .step-node .step-detail {
+    margin-top: 10px;
+    padding-left: 42px;
+    font-size: 14px;
+    color: #555;
+    line-height: 1.7;
+  }
+  .step-node .step-detail ul { margin: 4px 0 0 18px; }
+  .step-node .step-detail li { margin-bottom: 2px; }
+  .step-node .step-detail .highlight { color: var(--accent); font-weight: 600; }
+
+  /* 分支节点 */
+  .step-node.branch {
+    border-style: dashed;
+    background: #fefefe;
+  }
+  .step-node.fallback {
+    border-color: var(--gray);
+    background: var(--gray-lt);
+  }
+  .step-node.fallback .step-num { background: var(--gray); }
+  .step-node.fallback .step-title { color: var(--gray); }
+  .step-node.fallback .step-code { background: #ddd; color: var(--gray); }
+
+  /* ── 箭头连接 ── */
+  .arrow-connector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 36px;
+    position: relative;
+    color: var(--accent);
+    font-size: 20px;
+    opacity: .6;
+  }
+  .arrow-connector .line {
+    width: 2px;
+    height: 100%;
+    background: var(--accent);
+    opacity: .3;
+  }
+
+  /* 分支并行 */
+  .branch-row {
+    display: flex;
+    gap: 20px;
+    width: 100%;
+    max-width: 900px;
+    justify-content: center;
+  }
+  .branch-row .step-node {
+    flex: 1;
+    max-width: 420px;
+  }
+
+  /* ── 数据库节点 ── */
+  .db-node {
+    background: linear-gradient(135deg, #2c3e50, #34495e);
+    color: #fff;
+    border: none;
+  }
+  .db-node .step-title { color: #f1c40f !important; }
+  .db-node .step-detail { color: #ecf0f1 !important; }
+  .db-node .step-detail .highlight { color: #f1c40f !important; }
+
+  /* ── 汇总表 ── */
+  .summary-table {
+    width: 100%;
+    max-width: 900px;
+    margin: 24px auto 0;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  .summary-table th {
+    background: var(--accent);
+    color: #fff;
+    padding: 10px 14px;
+    text-align: left;
+    font-weight: 600;
+  }
+  .summary-table td {
+    padding: 9px 14px;
+    border-bottom: 1px solid #e8e8e8;
+  }
+  .summary-table tr:nth-child(even) td { background: #fafafa; }
+  .summary-table .severity-major { color: var(--red); font-weight: 700; }
+  .summary-table .severity-minor { color: var(--orange); font-weight: 600; }
+
+  /* ── 响应式 ── */
+  @media (max-width: 768px) {
+    .branch-row { flex-direction: column; }
+    .branch-row .step-node { max-width: 100%; }
+    .agent-section { margin: 20px 12px; }
+    .flow-body { padding: 16px; }
+  }
+
+  /* ── 打印 ── */
+  @media print {
+    body { background: #fff; }
+    .agent-section { box-shadow: none; break-inside: avoid; margin: 20px 0; }
+  }
+
+  /* ── 脚注 ── */
+  .footer-note {
+    text-align: center;
+    color: #999;
+    font-size: 13px;
+    padding: 40px 0 20px;
+  }
+
+  /* ── 目录导航 ── */
+  .toc {
+    max-width: 1100px;
+    margin: 0 auto 30px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+  }
+  .toc a {
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 24px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    transition: transform .15s;
+  }
+  .toc a:hover { transform: scale(1.05); }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- 封 面 -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="cover">
+  <h1>AE Sentinel · 五大智能体流程图</h1>
+  <div class="sub">药物临床试验不良事件智能监测平台 — 架构可视化</div>
+  <div class="badges">
+    <span class="badge">智能体1 · AE编码</span>
+    <span class="badge">智能体2 · 方案偏离</span>
+    <span class="badge">智能体3 · SAE报告</span>
+    <span class="badge">智能体4 · 信号挖掘</span>
+    <span class="badge">智能体5 · 合规质控</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- 目录导航 -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="toc">
+  <a href="#agent1" style="background:#2B579A;">智能体1 · AE智能编码</a>
+  <a href="#agent2" style="background:#C0392B;">智能体2 · 方案偏离识别</a>
+  <a href="#agent3" style="background:#7D3C98;">智能体3 · SAE报告生成</a>
+  <a href="#agent4" style="background:#117A65;">智能体4 · 安全性信号挖掘</a>
+  <a href="#agent5" style="background:#E67E22;">智能体5 · 合规与质控</a>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- 智能体 1：AE 编码 -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="agent-section agent1" id="agent1">
+  <div class="agent-header">
+    <div class="agent-num">1</div>
+    <div class="agent-info">
+      <h2>AE 智能编码 · 6步流水线</h2>
+      <div class="file">backend/agents/ae_coder.py &nbsp;|&nbsp; 入口: process_ae() L273-329</div>
+    </div>
+  </div>
+  <div class="flow-body">
+    <div class="entry-label">📥 输入：AE描述文本 + patient_id + visit_date + drug_name</div>
+
+    <div class="step-list">
+
+      <!-- Step 1 -->
+      <div class="step-node">
+        <span class="step-num">1</span>
+        <span class="step-title">同义词映射</span>
+        <span class="step-code">match_meddra() L167-206</span>
+        <div class="step-detail">
+          <ul>
+            <li><span class="highlight">130+医学同义词</span>覆盖18个SOC器官系统，按长度<span class="highlight">降序排列</span>（长词优先：<i>"免疫相关肝炎"</i>优先于<i>"肝炎"</i>）</li>
+            <li>逐词在AE文本中查找，命中后标记已匹配区间，<span class="highlight">避免短词重复匹配</span></li>
+            <li>输出：LLT/PT/SOC编码 + 置信度（精确匹配 <span class="highlight">0.95</span>，同义词映射 0.88）</li>
+            <li>示例："反胃" → "恶心" (PT:10028813) → SOC: 胃肠系统疾病</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="arrow-connector"><div class="line"></div></div>
+
+      <!-- 分支: 匹配成功? -->
+      <div class="branch-row">
+        <div class="step-node branch">
+          <span class="step-num">✓</span>
+          <span class="step-title">匹配成功？codes非空？</span>
+          <div class="step-detail">是 → 继续 Step 2</div>
+        </div>
+        <div class="step-node fallback">
+          <span class="step-num">✗</span>
+          <span class="step-title">兜底编码</span>
+          <span class="step-code">L277-281</span>
+          <div class="step-detail">未匹配到任何关键词 → LLT/PT = <span class="highlight">"其他症状"</span>，置信度 0.60<br>继续后续流程</div>
+        </div>
+      </div>
+
+      <div class="arrow-connector"><div class="line"></div></div>
+
+      <!-- Step 2 -->
+      <div class="step-node">
+        <span class="step-num">2</span>
+        <span class="step-title">严重性分级 · 四级优先级</span>
+        <span class="step-code">assess_severity() L209-225</span>
+        <div class="step-detail">
+          按优先级从高到低依次判定（命中即返回）：
+          <span class="highlight">重要医学事件</span> (ALT/AST≥5ULN) → <span class="highlight">死亡</span> → <span class="highlight">住院</span> → <span class="highlight">危及生命</span> → severe&nbsp;&nbsp;|&nbsp;&nbsp;
+          中度词 (影响睡眠/持续/中度) → moderate&nbsp;&nbsp;|&nbsp;&nbsp;
+          轻度词 (轻微/自行缓解) → mild&nbsp;&nbsp;|&nbsp;&nbsp;
+          默认 → mild
+        </div>
+      </div>
+
+      <div class="arrow-connector"><div class="line"></div></div>
+
+      <!-- Step 3 -->
+      <div class="step-node">
+        <span class="step-num">3</span>
+        <span class="step-title">SAE 判定 · 六大标准</span>
+        <span class="step-code">assess_sae() L228-233</span>
+        <div class="step-detail">
+          逐一检查六大标准（L152-158）：
+          ① 死亡 ② 危及生命 ③ 导致住院 ④ 残疾 ⑤ 先天性畸形 ⑥ 重要医学事件<br>
+          返回：<span class="highlight">(is_sae: bool, [触发的标准名称列表])</span>
+        </div>
+      </div>
+
+      <div class="arrow-connector"><div class="line"></div></div>
+
+      <!-- Step 4 -->
+      <div class="step-node">
+        <span class="step-num">4</span>
+        <span class="step-title">预期性判断</span>
+        <span class="step-code">check_expected() L236-240</span>
+        <div class="step-detail">
+          对比 <span class="highlight">config.py EXPECTED_AES</span> 中预设的 14 个预期AE（免疫相关肺炎/肝炎/结肠炎、输液反应、疲乏、发热、皮疹、瘙痒、恶心、头痛、食欲下降、贫血、血小板减少、中性粒细胞减少）<br>
+          → 非预期 + SAE = <span class="highlight">SUSAR</span>（可疑非预期严重不良反应）
+        </div>
+      </div>
+
+      <div class="arrow-connector"><div class="line"></div></div>
+
+      <!-- Step 5 -->
+      <div class="step-node">
+        <span class="step-num">5</span>
+        <span class="step-title">因果关系评估 · WHO-UMC 六级法</span>
+        <span class="step-code">assess_causality() L243-270</span>
+        <div class="step-detail">
+          <span class="highlight">certain</span> (再激发阳性/免疫相关+停药缓解) →
+          <span class="highlight">probable</span> (SAE+停药恢复/药物相关) →
+          <span class="highlight">possible</span> (可能/不排除/怀疑) →
+          <span class="highlight">unlikely</span> (不太可能/无关/排除) →
+          <span class="highlight">conditional</span> (预期AE → possible) →
+          <span class="highlight">unassessable</span> (无法评估)
+        </div>
+      </div>
+
+      <div class="arrow-connector"><div class="line"></div></div>
+
+      <!-- Step 6 -->
+      <div class="step-node db-node">
+        <span class="step-num" style="background:#f1c40f;color:#2c3e50;">6</span>
+        <span class="step-title">持久化 + 自动联动 + 返回</span>
+        <span class="step-code" style="background:rgba(255,255,255,.15);color:#f1c40f;">L292-329</span>
+        <div class="step-detail">
+          <span class="highlight">6.1</span> INSERT INTO ae_results (19个字段: ae_id, patient_id, meddra_codes JSON, severity, sae_flag, sae_criteria JSON, expected_flag, causality, citations JSON, processing_time_ms…)<br>
+          <span class="highlight">6.2 自动联动</span> → 调用 deviation.process_patient_visit() 检测方案偏离 (L313-322)<br>
+          <span class="highlight">6.3</span> 返回完整结果 JSON → 前端渲染编码卡片 + "生成SAE报告"按钮
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- 智能体 2：方案偏离识别 -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="agent-section agent2" id="agent2">
+  <div class="agent-header">
+    <div class="agent-num">2</div>
+    <div class="agent-info">
+      <h2>方案偏离识别 · 7条规则全覆盖</h2>
+      <div class="file">backend/agents/deviation.py &nbsp;|&nbsp; 入口: process_patient_visit() L189-253</div>
+    </div>
+  </div>
+  <div class="flow-body">
+    <div class="entry-label">📥 输入：patient_id + visit_date + drug_name + (可选参数: 计划访视日期/用药剂量/合并用药/检查/入排标准)</div>
+
+    <div class="step-list">
+
+      <!-- PD-001 -->
+      <div class="step-node">
+        <span class="step-num">PD-001</span>
+        <span class="step-title">访视超窗</span>
+        <span class="step-code">check_visit_window() L28-42</span>
+        <div class="step-detail">
+          |实际日期 − 计划日期| &gt; <span class="highlight">3天</span> → <span class="highlight">major</span> 偏离
+          &nbsp;·&nbsp; 动作：alert_cra（通知CRA处理）
+        </div>
+      </div>
+
+      <div class="arrow-connector"><div class="line"></div></div>
+
+      <!-- PD-002 -->
+      <div class="step-node">
+        <span class="step-num">PD-002</span>
+        <span class="step-title">访视未做</span>
+        <span class="step-code">check_visit_compliance() L48-59</span>
+        <div class="step-detail">
+          计划访视日期 &lt; 今天 <b>且</b> 无实际访视记录 → <span class="highlight">major</span> 偏离
+        </div>
+      </div>
+
+      <div class="arrow-connector"><div class="line"></div></div>
+
+      <!-- PD-003 -->
+      <div class="step-node">
+        <span class="step-num">PD-003</span>
+        <span class="step-title">用药依从性不足</span>
+        <span class="step-code">check_medication_compliance() L65-94</span>
+        <div class="step-detail">
+          条件①：actual_dose 为 None → 无用药记录 → <span class="highlight">major</span><br>
+          条件②：actual_dose &lt; expected_dose × <span class="highlight">80%</span> → 依从性不足 → <span class="highlight">major</span><br>
+          描述含具体数值：<i>"实际剂量 400mg，仅为预期剂量 500mg 的 80%，低于阈值"</i>
+        </div>
+      </div>
+
+      <div class="arrow-connector"><div class="line"></div></div>
+
+      <!-- PD-004 -->
+      <div class="step-node">
+        <span class="step-num">PD-004</span>
+        <span class="step-title">禁止合并用药</span>
+        <span class="step-code">check_prohibited_drugs() L100-127</span>
+        <div class="step-detail">
+          内置 <span class="highlight">15种常见禁止药物</span>（CYP3A4诱导剂/抑制剂、免疫抑制剂、抗凝药、其他化疗药等）<br>
+          患者合并用药列表逐一比对，命中 → <span class="highlight">major</span> 偏离 + 列出违规药名
+        </div>
+      </div>
+
+      <div class="arrow-connector"><div class="line"></div></div>
+
+      <!-- PD-005 -->
+      <div class="step-node">
+        <span class="step-num">PD-005</span>
+        <span class="step-title">计划安全性检查缺失</span>
+        <span class="step-code">check_missing_tests() L133-145</span>
+        <div class="step-detail">
+          required_tests − completed_tests 的差集非空 → 偏离<br>
+          涉及 <span class="highlight">肝/心/安全</span> → <span class="highlight">major</span>；其他 → minor
+        </div>
+      </div>
+
+      <div class="arrow-connector"><div class="line"></div></div>
+
+      <!-- PD-006 -->
+      <div class="step-node">
+        <span class="step-num">PD-006</span>
+        <span class="step-title">入组标准不符合</span>
+        <span class="step-code">check_inclusion_criteria() L151-167</span>
+        <div class="step-detail">
+          inclusion_met = <span class="highlight">False</span> → <span class="highlight">major</span> 偏离<br>
+          可选附带 failed_criteria 列表：<i>"ECOG评分>2, 血小板<100×10⁹/L"</i>
+        </div>
+      </div>
+
+      <div class="arrow-connector"><div class="line"></div></div>
+
+      <!-- PD-007 -->
+      <div class="step-node">
+        <span class="step-num">PD-007</span>
+        <span class="step-title">排除标准违反</span>
+        <span class="step-code">check_exclusion_criteria() L173-189</span>
+        <div class="step-detail">
+          exclusion_met = <span class="highlight">True</span> → <span class="highlight">major</span> 偏离<br>
+          可选附带 triggered_criteria 列表：<i>"活动性乙肝, 未控制的脑转移"</i>
+        </div>
+      </div>
+
+      <div class="arrow-connector"><div class="line"></div></div>
+
+      <!-- 持久化 -->
+      <div class="step-node db-node">
+        <span class="step-num" style="background:#f1c40f;color:#2c3e50;">💾</span>
+        <span class="step-title">批量持久化 + 自动通知</span>
+        <span class="step-code" style="background:rgba(255,255,255,.15);color:#f1c40f;">save_deviation() L256-282</span>
+        <div class="step-detail">
+          <span class="highlight">INSERT</span> INTO deviations → 逐条写入数据库<br>
+          <span class="highlight">自动联动</span>：偏离动作为 alert_cra → notification_service.create_notification() → 通知 CRA
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 7规则汇总表 -->
+    <table class="summary-table">
+      <thead>
+        <tr><th>规则ID</th><th>规则名称</th><th>触发条件</th><th>严重度</th><th>实现函数</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>PD-001</td><td>访视超窗</td><td>实际−计划 &gt; 3天</td><td class="severity-major">major</td><td>check_visit_window()</td></tr>
+        <tr><td>PD-002</td><td>访视未做</td><td>计划日期已过且无记录</td><td class="severity-major">major</td><td>check_visit_compliance()</td></tr>
+        <tr><td>PD-003</td><td>用药依从性不足</td><td>实际剂量 &lt; 预期×80%</td><td class="severity-major">major</td><td>check_medication_compliance()</td></tr>
+        <tr><td>PD-004</td><td>禁止合并用药</td><td>使用方案禁止的药物</td><td class="severity-major">major</td><td>check_prohibited_drugs()</td></tr>
+        <tr><td>PD-005</td><td>检查缺失</td><td>必做检查有缺失</td><td class="severity-minor">major / minor</td><td>check_missing_tests()</td></tr>
+        <tr><td>PD-006</td><td>入组标准不符合</td><td>不满足入组条件</td><td class="severity-major">major</td><td>check_inclusion_criteria()</td></tr>
+        <tr><td>PD-007</td><td>排除标准违反</td><td>存在应排除条件</td><td class="severity-major">major</td><td>check_exclusion_criteria()</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- 智能体 3：SAE 报告生成 -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="agent-section agent3" id="agent3">
+  <div class="agent-header">
+    <div class="agent-num">3</div>
+    <div class="agent-info">
+      <h2>SAE 报告生成 · CIOMS-I 国际规范</h2>
+      <div class="file">backend/agents/sae_report.py &nbsp;|&nbsp; 入口: generate_sae_report() L62-97</div>
+    </div>
+  </div>
+  <div class="flow-body">
+    <div class="entry-label">📥 输入：ae_id + reporter_name + reporter_org</div>
+
+    <div class="step-list">
+
+      <!-- Step 1 -->
+      <div class="step-node">
+        <span class="step-num">1</span>
+        <span class="step-title">查询AE原始记录</span>
+        <span class="step-code">L63-67</span>
+        <div class="step-detail">
+          SELECT * FROM ae_results WHERE ae_id = ?<br>
+          若未找到 → <span class="highlight">raise ValueError</span>（确保上游数据存在）<br>
+          获取：patient_id, ae_text, drug_name, severity, meddra_codes(JSON), causality, onset/end_date
+        </div>
+      </div>
+
+      <div class="arrow-connector"><div class="line"></div></div>
+
+      <!-- Step 2 -->
+      <div class="step-node">
+        <span class="step-num">2</span>
+        <span class="step-title">填充 CIOMS-I 20+ 字段</span>
+        <span class="step-code">generate_cioms_fields() L14-58</span>
+        <div class="step-detail">
+          <ul>
+            <li><span class="highlight">患者信息</span>：首字母、出生日期、性别</li>
+            <li><span class="highlight">AE信息</span>：描述、开始/结束日期、转归判定 (recovered / ongoing / fatal) (L20-25)</li>
+            <li><span class="highlight">可疑药物</span>：名称、剂量、起止日期</li>
+            <li><span class="highlight">合并用药 + 报告人资质</span> (Physician)</li>
+            <li><span class="highlight">因果关系</span>：WHO-UMC 方法 + causality_score</li>
+            <li><span class="highlight">叙述性摘要 narrative</span> (L36-40)：自动拼接患者ID/药物/日期/PT名称/原始描述/严重性</li>
+            <li><span class="highlight">上报截止日期</span> (L28-35)：onset_date + 7天 → ISO8601 &nbsp;+&nbsp; <span class="highlight">24h紧急上报</span> (L57-58)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="arrow-connector"><div class="line"></div></div>
+
+      <!-- Step 3 -->
+      <div class="step-node">
+        <span class="step-num">3</span>
+        <span class="step-title">同类药物安全信息检索</span>
+        <span class="step-code">L75-77</span>
+        <div class="step-detail">
+          基于PT名称自动生成参考描述：<br>
+          <i>"针对{PT}，同类PD-1/PD-L1抑制剂（帕博利珠单抗、纳武利尤单抗）已知存在类似不良反应信号，发生率约1-5%。建议参考最新IB第4.8节。"</i>
+        </div>
+      </div>
+
+      <div class="arrow-connector"><div class="line"></div></div>
+
+      <!-- Step 4 -->
+      <div class="step-node db-node">
+        <span class="step-num" style="background:#f1c40f;color:#2c3e50;">4</span>
+        <span class="step-title">持久化 + 多格式导出</span>
+        <span class="step-code" style="background:rgba(255,255,255,.15);color:#f1c40f;">L79-97</span>
+        <div class="step-detail">
+          <span class="highlight">INSERT</span> INTO sae_reports (report_id, ae_id, cioms_fields JSON, causality, similar_drug_safety, status="draft", deadline)<br>
+          <span class="highlight">导出三格式</span>（export_service.py）：
+          <b>Word</b>(python-docx渲染CIOMS-I表格) ·
+          <b>JSON</b>(结构化数据) ·
+          <b>PDF</b>(fpdf2真实渲染，自动检测中文字体)
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- 智能体 4：安全性信号挖掘 -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="agent-section agent4" id="agent4">
+  <div class="agent-header">
+    <div class="agent-num">4</div>
+    <div class="agent-info">
+      <h2>安全性信号挖掘 · PRR/ROR 真实统计</h2>
+      <div class="file">backend/agents/signal_agent.py &nbsp;|&nbsp; 入口: analyze_signal() L123-247</div>
+    </div>
+  </div>
+  <div class="flow-body">
+    <div class="entry-label">📥 输入：drug_name + analysis_period（近30天/近90天/近1年）</div>
+
+    <div class="step-list">
+
+      <!-- Step 1 -->
+      <div class="step-node">
+        <span class="step-num">1</span>
+        <span class="step-title">数据采集</span>
+        <span class="step-code">L126-140</span>
+        <div class="step-detail">
+          查询目标药物所有AE → 统计 <span class="highlight">暴露人数</span>（去重patient_id） → 统计全库AE总数<br>
+          若records为空 → 返回空信号列表
+        </div>
+      </div>
+
+      <div class="arrow-connector"><div class="line"></div></div>
+
+      <!-- Step 2 -->
+      <div class="step-node">
+        <span class="step-num">2</span>
+        <span class="step-title">按10个器官系统分类统计</span>
+        <span class="step-code">L150-167 &nbsp;|&nbsp; SIGNAL_DEFINITIONS L13-54</span>
+        <div class="step-detail">
+          <table style="width:100%;font-size:13px;border-collapse:collapse;margin-top:6px;">
+            <tr>
+              <td style="padding:3px 8px;">🫁 肝胆</td><td style="padding:3px 8px;">肝/ALT/AST/胆红素</td>
+              <td style="padding:3px 8px;">🫀 心脏</td><td style="padding:3px 8px;">心肌/QT/心衰/心律失常</td>
+            </tr>
+            <tr style="background:#f9f9f9;">
+              <td style="padding:3px 8px;">🫁 呼吸</td><td style="padding:3px 8px;">肺/间质/ILD/气促</td>
+              <td style="padding:3px 8px;">🧬 内分泌</td><td style="padding:3px 8px;">甲减/甲亢/肾上腺/血糖</td>
+            </tr>
+            <tr>
+              <td style="padding:3px 8px;">🩸 血液</td><td style="padding:3px 8px;">贫血/血小板/中性粒</td>
+              <td style="padding:3px 8px;">🫘 肾脏</td><td style="padding:3px 8px;">肾/肌酐/蛋白尿/血尿</td>
+            </tr>
+            <tr style="background:#f9f9f9;">
+              <td style="padding:3px 8px;">🧴 皮肤</td><td style="padding:3px 8px;">皮疹/瘙痒/Stevens-Johnson</td>
+              <td style="padding:3px 8px;">🧠 神经</td><td style="padding:3px 8px;">头痛/头晕/周围神经/癫痫</td>
+            </tr>
+            <tr>
+              <td style="padding:3px 8px;">🫃 胃肠</td><td style="padding:3px 8px;">恶心/呕吐/腹泻/结肠炎</td>
+              <td style="padding:3px 8px;">🌡️ 全身</td><td style="padding:3px 8px;">发热/疲乏/输液反应/寒战</td>
+            </tr>
+          </table>
+          每个定义含：keywords 匹配列表 + <span class="highlight">background_rate</span> (真实世界背景发生率) + recommended_action
+        </div>
+      </div>
+
+      <div class="arrow-connector"><div class="line"></div></div>
+
+      <!-- Step 3 -->
+      <div class="step-node">
+        <span class="step-num">3</span>
+        <span class="step-title">PRR + ROR + χ² 真实统计计算</span>
+        <span class="step-code">_calc_prr() L84-103 &nbsp;|&nbsp; _calc_ror() L106-120</span>
+        <div class="step-detail">
+          <div style="display:flex;gap:30px;flex-wrap:wrap;">
+            <div style="flex:1;min-width:280px;">
+              <b>2×2 列联表</b>
+              <table style="width:100%;border-collapse:collapse;margin-top:4px;font-size:13px;">
+                <tr><th></th><th style="padding:4px 10px;background:var(--accent-lt);">目标AE</th><th style="padding:4px 10px;background:var(--accent-lt);">其他AE</th></tr>
+                <tr><td style="padding:4px 10px;background:var(--accent-lt);">目标药物</td><td style="text-align:center;padding:4px;"><b>a</b></td><td style="text-align:center;padding:4px;"><b>b</b></td></tr>
+                <tr><td style="padding:4px 10px;background:var(--accent-lt);">其他药物</td><td style="text-align:center;padding:4px;"><b>c</b></td><td style="text-align:center;padding:4px;"><b>d</b></td></tr>
+              </table>
+            </div>
+            <div style="flex:2;min-width:350px;">
+              <b>PRR</b> = [a/(a+b)] / [c/(c+d)] &nbsp;|&nbsp; χ² = (|a−E| − 0.5)² / E <i>(Yates校正)</i><br>
+              <b>ROR</b> = (a×d) / (b×c) &nbsp;|&nbsp; 95%CI: exp(ln ROR ± 1.96×SE)<br>
+              <span class="highlight">EMA阳性标准</span>：PRR ≥ 2 <b>且</b> a ≥ 3 <b>且</b> χ² ≥ 4
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="arrow-connector"><div class="line"></div></div>
+
+      <!-- Step 4 -->
+      <div class="step-node">
+        <span class="step-num">4</span>
+        <span class="step-title">信号状态判定</span>
+        <span class="step-code">L178-184</span>
+        <div class="step-detail">
+          <span style="display:inline-block;background:#c0392b;color:#fff;padding:4px 12px;border-radius:12px;margin-right:8px;font-weight:700;">positive</span> PRR≥2 ∧ a≥3 ∧ χ²≥4 → 确认阳性，需立即响应<br>
+          <span style="display:inline-block;background:#e67e22;color:#fff;padding:4px 12px;border-radius:12px;margin-right:8px;font-weight:700;">watching</span> PRR≥2 ∧ a≥2 → 监测中，接近阈值<br>
+          <span style="display:inline-block;background:#3498db;color:#fff;padding:4px 12px;border-radius:12px;font-weight:700;">new</span> 其余情况 → 新发现，待观察
+        </div>
+      </div>
+
+      <div class="arrow-connector"><div class="line"></div></div>
+
+      <!-- Step 5 -->
+      <div class="step-node">
+        <span class="step-num">5</span>
+        <span class="step-title">PubMed 文献检索验证</span>
+        <span class="step-code">search_pubmed() L57-69</span>
+        <div class="step-detail">
+          检索策略: <i>(药物名[Title/Abstract]) AND (事件[Title/Abstract])</i><br>
+          当前为模拟数据 → 配置 <span class="highlight">NCBI_API_KEY</span> 环境变量后自动接入 NCBI E-utilities 真实 API
+        </div>
+      </div>
+
+      <div class="arrow-connector"><div class="line"></div></div>
+
+      <!-- Step 6 -->
+      <div class="step-node db-node">
+        <span class="step-num" style="background:#f1c40f;color:#2c3e50;">6</span>
+        <span class="step-title">持久化 + 返回信号列表</span>
+        <span class="step-code" style="background:rgba(255,255,255,.15);color:#f1c40f;">L221-247</span>
+        <div class="step-detail">
+          <span class="highlight">INSERT</span> INTO signals (11字段: signal_id, drug_name, signal_name, signal_status, event_count, incidence_rate, background_rate, statistical_test "PRR=2.5; χ²=5.2; ROR=3.1; 95%CI[1.8,5.4]", related_literature JSON, recommended_action, analysis_period)<br>
+          <span class="highlight">返回</span>：drug_name / total_exposed / total_signals / signals[] → 前端 ECharts 可视化
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- 智能体 5：合规与质控 -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="agent-section agent5" id="agent5">
+  <div class="agent-header">
+    <div class="agent-num">5</div>
+    <div class="agent-info">
+      <h2>合规与质控 · 双维度评分</h2>
+      <div class="file">backend/agents/compliance.py &nbsp;|&nbsp; 入口: get_compliance_report() L69-91</div>
+    </div>
+  </div>
+  <div class="flow-body">
+    <div class="entry-label">📥 输入：period（"weekly" / "monthly"）</div>
+
+    <div class="step-list">
+
+      <!-- Step 1 -->
+      <div class="step-node">
+        <span class="step-num">1</span>
+        <span class="step-title">SAE 提交及时性检查</span>
+        <span class="step-code">check_sae_timeliness() L7-47</span>
+        <div class="step-detail">
+          <ul>
+            <li><span class="highlight">JOIN</span> sae_reports + ae_results，过滤 report_status ≠ "submitted"</li>
+            <li>计算 <span class="highlight">days_remaining</span> = (deadline − datetime.now()).days</li>
+            <li>三级状态：
+              <span style="color:#c0392b;font-weight:700;">overdue</span> (days &lt; 0) &nbsp;|&nbsp;
+              <span style="color:#e67e22;font-weight:700;">urgent</span> (days ≤ 2) &nbsp;|&nbsp;
+              <span style="color:#27ae60;font-weight:700;">normal</span> (days &gt; 2)
+            </li>
+            <li>同步计算双截止日：<span class="highlight">deadline_7day</span>（死亡/危及生命） / <span class="highlight">deadline_15day</span>（其他SAE）</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="arrow-connector"><div class="line"></div></div>
+
+      <!-- Step 2 -->
+      <div class="step-node">
+        <span class="step-num">2</span>
+        <span class="step-title">CIOMS-I 字段完整性检查</span>
+        <span class="step-code">check_field_completeness() L50-66</span>
+        <div class="step-detail">
+          <span class="highlight">10个必填字段</span>逐一核查（L53-57）：<br>
+          patient_initials · ae_description · ae_start_date · ae_serious · suspect_drug_name ·
+          reporter_qualification · study_number · sponsor · narrative · causality_method<br>
+          输出：{ report_id, <span class="highlight">missing_fields[]</span>, complete: bool }
+        </div>
+      </div>
+
+      <div class="arrow-connector"><div class="line"></div></div>
+
+      <!-- Step 3 -->
+      <div class="step-node">
+        <span class="step-num">3</span>
+        <span class="step-title">综合评分计算</span>
+        <span class="step-code">L69-77</span>
+        <div class="step-detail">
+          <b>及时性评分</b> = 未超期数 / 总报告数 &nbsp;&nbsp;|&nbsp;&nbsp;
+          <b>完整性评分</b> = 完整报告数 / 总报告数<br>
+          <span class="highlight">综合评分 = 0.5 × 及时性 + 0.5 × 完整性</span> &nbsp;（总报告数为0时默认1.0）
+        </div>
+      </div>
+
+      <div class="arrow-connector"><div class="line"></div></div>
+
+      <!-- Step 4 -->
+      <div class="step-node">
+        <span class="step-num">4</span>
+        <span class="step-title">生成合规问题清单</span>
+        <span class="step-code">L78-86</span>
+        <div class="step-detail">
+          逐条生成人类可读的问题描述：<br>
+          🔴 <span class="highlight">超期</span>："报告{report_id}已超期"<br>
+          🟡 <span class="highlight">紧急</span>："报告{report_id}即将超期(剩余N天)"<br>
+          🔵 <span class="highlight">字段缺失</span>："报告{report_id}缺失字段: 字段1, 字段2"<br>
+          若全部合规 → "无合规问题"
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 评分可视化说明 -->
+    <table class="summary-table" style="margin-top:20px;">
+      <thead>
+        <tr><th>评分项</th><th>计算方式</th><th>前端展示</th><th>颜色编码</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>综合合规评分</td><td>0.5×及时性 + 0.5×完整性</td><td>百分比</td><td>🟢 >80% &nbsp; 🟡 60-80% &nbsp; 🔴 ≤60%</td></tr>
+        <tr><td>及时性评分</td><td>1.0 − 超期数/总数</td><td>Badge标签</td><td>🟢 normal &nbsp; 🟡 urgent &nbsp; 🔴 overdue</td></tr>
+        <tr><td>完整性评分</td><td>完整报告数/总数</td><td>进度条</td><td>🟢 >90% &nbsp; 🟡 70-90% &nbsp; 🔴 <70%</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- 脚注 -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="footer-note">
+  AE Sentinel — 药物临床试验不良事件智能监测平台 &nbsp;|&nbsp; 五大智能体流程图 &nbsp;|&nbsp; 可直接截图用于 PPT 演示
+</div>
+
+</body>
+</html>
