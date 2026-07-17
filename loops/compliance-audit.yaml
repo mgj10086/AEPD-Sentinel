@@ -1,0 +1,68 @@
+# GCP Compliance Audit Loop
+# Multi-dimension audit for Good Clinical Practice compliance.
+name: compliance-audit
+description: >
+  Conducts a comprehensive GCP (Good Clinical Practice) compliance audit across
+  the AE Sentinel system: documentation completeness, process adherence, data
+  integrity (HMAC audit trail verification), and regulatory readiness. Produces
+  a compliance scorecard with actionable findings.
+
+trigger:
+  type: manual
+  description: Triggered on-demand for periodic compliance audits or pre-inspection prep
+
+pipeline:
+  - parallel:
+      - prompt: >
+          Audit the documentation and record-keeping for GCP compliance.
+          Check:
+          1. Are all required documents present (trial protocol, IB, CIOMS-I
+             forms, informed consent references)?
+          2. Are audit trails complete with HMAC chain integrity?
+          3. Are AE records properly timestamped and attributable?
+          4. Is the document management system meeting ALCOA+ principles
+             (Attributable, Legible, Contemporaneous, Original, Accurate)?
+        label: Documentation Audit
+
+      - prompt: >
+          Audit the pharmacovigilance process for GCP compliance.
+          Check:
+          1. Are AE→SAE workflows following the correct escalation path?
+          2. Are reporting timelines being met (7-day/15-day SAE reporting)?
+          3. Is the signal detection process adequately documented?
+          4. Are protocol deviation assessments properly reviewed and signed off?
+        label: Process Audit
+
+      - prompt: >
+          Audit data integrity and system security.
+          Check:
+          1. Is the HMAC audit chain intact and verifiable via /api/audit/verify?
+          2. Are user access controls (RBAC: admin/pv_specialist/cra) properly enforced?
+          3. Are JWT tokens properly managed (expiry, refresh)?
+          4. Is the database audit log free of tampering or gaps?
+        label: Data Integrity Audit
+
+verify:
+  maker:
+    - Documentation Audit
+    - Process Audit
+    - Data Integrity Audit
+  checker: Independent GCP Auditor
+  maxRounds: 1
+  autoRetry: true
+
+budget:
+  maxTokens: 350000
+  maxDurationMinutes: 25
+  maxIterations: 5
+  maxCostUsd: 1.00
+
+memory:
+  store: filesystem
+  path: .loopcode/state
+
+tags:
+  - compliance
+  - gcp
+  - audit
+  - regulatory

@@ -1,0 +1,75 @@
+# AE Coding Verification Loop
+# Validates MedDRA coding accuracy, severity assessment, and SAE determination
+# for adverse events in clinical trials.
+name: ae-coding-review
+description: >
+  Verifies the accuracy of AE (Adverse Event) coding results: MedDRA code
+  assignment, severity grading (CTCAE), seriousness determination, expectedness
+  assessment, and causality evaluation. Ensures pharmacovigilance data quality.
+
+trigger:
+  type: manual
+  description: Triggered after batch AE processing or on-demand for quality review
+
+pipeline:
+  - parallel:
+      - prompt: >
+          Review the AE coding results for MedDRA coding accuracy.
+          Check:
+          1. Is the assigned MedDRA LLT/PT code correct based on the verbatim term?
+          2. Are synonym matches appropriate? Flag any mismatches.
+          3. Are there any uncoded terms that should have a match?
+          Focus on coding errors and missing code opportunities.
+        label: Coding Accuracy Review
+
+      - prompt: >
+          Review the severity assessment for each AE.
+          Check:
+          1. Is the CTCAE grade (1-5) appropriate given the AE description?
+          2. Are there any events that should be upgraded/downgraded?
+          3. Flag any Grade 3+ events that lack sufficient documentation.
+        label: Severity Assessment Review
+
+      - prompt: >
+          Review the SAE (Serious Adverse Event) determination for each AE.
+          Check:
+          1. Does the event meet any seriousness criteria (death, life-threatening,
+             hospitalization, disability, congenital anomaly, other important event)?
+          2. Are SAE-classified events properly flagged?
+          3. Flag any potential SAEs that were missed.
+        label: SAE Determination Review
+
+      - prompt: >
+          Review the causality and expectedness assessment.
+          Check:
+          1. Is the causality assessment (related/unrelated) justified by the evidence?
+          2. Is the expectedness determination consistent with the investigational
+             drug's known safety profile (IB/SPC)?
+          3. Flag any inconsistencies between causality and expectedness ratings.
+        label: Causality & Expectedness Review
+
+verify:
+  maker:
+    - Coding Accuracy Review
+    - Severity Assessment Review
+    - SAE Determination Review
+    - Causality & Expectedness Review
+  checker: Pharmacovigilance Expert Verifier
+  maxRounds: 5
+  autoRetry: true
+
+budget:
+  maxTokens: 300000
+  maxDurationMinutes: 20
+  maxIterations: 5
+  maxCostUsd: 3.00
+
+memory:
+  store: filesystem
+  path: .loopcode/state
+
+tags:
+  - ae-coding
+  - meddra
+  - pharmacovigilance
+  - quality-review

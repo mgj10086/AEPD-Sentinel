@@ -73,6 +73,9 @@ htmlcov/
 # Claude internal working directory (temporary artifacts)
 .claude/
 
+# LoopCode runtime state
+.loopcode/state/
+
 # Downloads (large data files)
 data/downloads/*.zip
 data/downloads/*.asc

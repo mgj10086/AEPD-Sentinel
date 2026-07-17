@@ -1,0 +1,15 @@
+# LoopCode Project Configuration for AE Sentinel
+# AI-powered adverse event monitoring platform for clinical trials
+version: "1"
+
+settings:
+  defaultBudget:
+    maxTokens: 500000
+    maxDurationMinutes: 30
+    maxIterations: 10
+  defaultMemory:
+    store: filesystem
+    path: .loopcode/state
+  enforceMakerChecker: true
+
+loops: {}

@@ -1,0 +1,66 @@
+# Protocol Deviation Detection Loop
+# Reviews and validates protocol deviation detection accuracy.
+name: deviation-detection-review
+description: >
+  Reviews protocol deviation detection results, validates detection rules (PD-001
+  through PD-007), analyzes false positive/negative patterns, and suggests rule
+  refinements. Ensures deviations are properly linked to source AE records.
+
+trigger:
+  type: manual
+  description: Triggered after deviation detection runs or on-demand for rule tuning
+
+pipeline:
+  - parallel:
+      - prompt: >
+          Review the protocol deviation detection rules (PD-001 ~ PD-007) for
+          clinical relevance and accuracy.
+          Check:
+          1. Is each rule clinically justified based on the trial protocol?
+          2. Are the detection thresholds appropriate (not too sensitive/specific)?
+          3. Do the rules cover all critical protocol deviations?
+          4. Are there any missing rules for known safety signals?
+        label: Detection Rule Review
+
+      - prompt: >
+          Review the detected deviations for accuracy.
+          Check:
+          1. Are the detected deviations truly protocol violations, or false positives?
+          2. Is the AE-to-deviation linkage (ae_coder → deviation auto-trigger) correct?
+          3. Are severity classifications appropriate for each deviation?
+          4. Flag any missed deviations (false negatives) based on AE data patterns.
+        label: Deviation Accuracy Review
+
+      - prompt: >
+          Analyze the deviation detection system for operational effectiveness.
+          Check:
+          1. Are deviations being detected in a timely manner relative to AE occurrence?
+          2. Is the notification system triggering correctly for critical deviations?
+          3. Are deviation trends being tracked for safety signal potential?
+          4. Suggest rule threshold adjustments to optimize sensitivity/specificity.
+        label: Operational Effectiveness Review
+
+verify:
+  maker:
+    - Detection Rule Review
+    - Deviation Accuracy Review
+    - Operational Effectiveness Review
+  checker: Clinical Research Associate Verifier
+  maxRounds: 1
+  autoRetry: false
+
+budget:
+  maxTokens: 200000
+  maxDurationMinutes: 15
+  maxIterations: 5
+  maxCostUsd: 0.50
+
+memory:
+  store: filesystem
+  path: .loopcode/state
+
+tags:
+  - deviation
+  - protocol-compliance
+  - gcp
+  - quality-review

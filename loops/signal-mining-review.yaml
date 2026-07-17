@@ -1,0 +1,70 @@
+# Safety Signal Mining Verification Loop
+# Verifies safety signal detection results using statistical and clinical review.
+name: signal-mining-review
+description: >
+  Verifies safety signal detection results: validates statistical methods
+  (Fisher's exact test, disproportionality analysis), reviews clinical plausibility
+  of detected signals, and cross-references against PubMed literature. Ensures
+  signal detection is both statistically sound and clinically meaningful.
+
+trigger:
+  type: manual
+  description: Triggered after signal mining runs or for periodic safety surveillance
+
+pipeline:
+  - parallel:
+      - prompt: >
+          Review the statistical methodology for safety signal detection.
+          Check:
+          1. Is the Fisher's exact test being correctly applied to the 2x2
+             contingency table (drug-AE vs non-drug-AE)?
+          2. Are disproportionality measures (PRR, ROR, EBGM) correctly calculated?
+          3. Are the significance thresholds appropriate for the sample size?
+          4. Is there adequate adjustment for multiple comparisons?
+          5. Flag any statistical artifacts or false positives due to small cell counts.
+        label: Statistical Method Review
+
+      - prompt: >
+          Review the clinical plausibility of detected safety signals.
+          Check:
+          1. Is there a biologically plausible mechanism for each signal?
+          2. Are the signals consistent with known class effects or drug pharmacology?
+          3. Is there confounding by indication or concomitant medications?
+          4. Do the signals align with the patient population and trial phase?
+          5. Prioritize signals by clinical impact (severity × frequency).
+        label: Clinical Plausibility Review
+
+      - prompt: >
+          Cross-reference detected signals against published literature and
+          external safety databases.
+          Check:
+          1. Does PubMed literature support or refute each signal?
+          2. Are there similar signals in FDA FAERS or WHO VigiBase?
+          3. Is the signal novel or already known (per IB/SPC)?
+          4. Recommend further investigation for signals with mixed evidence.
+        label: Literature & External Data Review
+
+verify:
+  maker:
+    - Statistical Method Review
+    - Clinical Plausibility Review
+    - Literature & External Data Review
+  checker: Drug Safety Expert Verifier
+  maxRounds: 5
+  autoRetry: true
+
+budget:
+  maxTokens: 400000
+  maxDurationMinutes: 30
+  maxIterations: 5
+  maxCostUsd: 5.00
+
+memory:
+  store: filesystem
+  path: .loopcode/state
+
+tags:
+  - signal-mining
+  - pharmacovigilance
+  - safety-surveillance
+  - statistics

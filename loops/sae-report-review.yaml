@@ -1,0 +1,68 @@
+# SAE Report Quality Check Loop
+# Reviews CIOMS-I SAE reports for completeness, accuracy, and regulatory compliance.
+name: sae-report-review
+description: >
+  Automatically reviews CIOMS-I SAE (Serious Adverse Event) reports for completeness,
+  accuracy of medical content, proper formatting, and compliance with ICH E2B(R3)
+  and local regulatory requirements. Flags missing fields, inconsistent data, and
+  formatting issues before submission.
+
+trigger:
+  type: manual
+  description: Triggered when an SAE report is generated and ready for quality review
+
+pipeline:
+  - parallel:
+      - prompt: >
+          Review the CIOMS-I SAE report for content completeness and medical accuracy.
+          Check:
+          1. Are all mandatory CIOMS-I fields populated (patient details, suspect drug,
+             adverse event description, reporter info)?
+          2. Is the narrative medically coherent and consistent with the structured data?
+          3. Are dates, dosages, and lab values internally consistent?
+          4. Is the patient history and concomitant medication information complete?
+        label: Content Completeness Review
+
+      - prompt: >
+          Review the SAE report formatting and export quality.
+          Check:
+          1. Does the PDF/DOCX output match the CIOMS-I form layout?
+          2. Are CJK fonts rendering correctly (if applicable)?
+          3. Are all sections properly aligned and paginated?
+          4. Is the file export free of corruption or truncation?
+        label: Format & Export Review
+
+      - prompt: >
+          Review the SAE report for regulatory compliance.
+          Check:
+          1. Does the report meet ICH E2B(R3) data element requirements?
+          2. Are seriousness criteria properly documented per 21 CFR 312.32?
+          3. Is the expectedness determination consistent with the IB/SPC?
+          4. Is the report timeline compliant (7/15-day reporting for SAEs)?
+          5. Flag any compliance gaps that could result in a regulatory finding.
+        label: Regulatory Compliance Review
+
+verify:
+  maker:
+    - Content Completeness Review
+    - Format & Export Review
+    - Regulatory Compliance Review
+  checker: GCP Compliance Auditor
+  maxRounds: 3
+  autoRetry: true
+
+budget:
+  maxTokens: 250000
+  maxDurationMinutes: 15
+  maxIterations: 3
+  maxCostUsd: 2.00
+
+memory:
+  store: filesystem
+  path: .loopcode/state
+
+tags:
+  - sae-report
+  - cioms-i
+  - regulatory-compliance
+  - quality-review
